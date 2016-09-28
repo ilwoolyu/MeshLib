@@ -641,6 +641,32 @@ void Mesh::saveFile(const char *filename, const char *format, bool normal)
 	}
 }
 
+void Mesh::unit(void)
+{
+	centering();
+
+	float minx = FLT_MAX, miny = FLT_MAX, minz = FLT_MAX;
+	float maxx = -FLT_MAX, maxy = -FLT_MAX, maxz = -FLT_MAX;
+	for (int n = 0; n < m_nVertex; n++)
+	{
+		if (minx > m_vertex[n]->fv()[0]) minx = m_vertex[n]->fv()[0];
+		if (maxx < m_vertex[n]->fv()[0]) maxx = m_vertex[n]->fv()[0];
+		if (miny > m_vertex[n]->fv()[1]) miny = m_vertex[n]->fv()[1];
+		if (maxy < m_vertex[n]->fv()[1]) maxy = m_vertex[n]->fv()[1];
+		if (minz > m_vertex[n]->fv()[2]) minz = m_vertex[n]->fv()[2];
+		if (maxz < m_vertex[n]->fv()[2]) maxz = m_vertex[n]->fv()[2];
+	}
+	float lenx = 1 / (maxx - minx);
+	float leny = 1 / (maxy - miny);
+	float lenz = 1 / (maxz - minz);
+
+	float factor;
+	factor = (lenx > leny) ? lenx: leny;
+	factor = (factor > lenz) ? factor: lenz;
+
+	scaling(factor);
+}
+
 void Mesh::connectivity(void)
 {
 	int *nNeighbor = new int[m_nVertex];
