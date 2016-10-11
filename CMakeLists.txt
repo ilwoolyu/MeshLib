@@ -46,7 +46,13 @@ set(SRC_GEOD_FILES src/Geodesic/Geodesic.cpp src/Geodesic/GeodesicA.cpp
 	src/Geodesic/gw/gw_geodesic/GW_TriangularInterpolation_Linear.cpp
 	src/Geodesic/gw/gw_geodesic/GW_TriangularInterpolation_Quadratic.cpp)
 
-add_library(Mesh SHARED ${SRC_FILES} ${SRC_UTIL_FILES} ${SRC_GEOD_FILES})
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+
+if(BUILD_SHARED_LIBS)
+	set(BUILD_SHARED SHARED)
+endif(BUILD_SHARED_LIBS)
+
+add_library(Mesh ${BUILD_SHARED} ${SRC_FILES} ${SRC_UTIL_FILES} ${SRC_GEOD_FILES})
 set_target_properties(Mesh PROPERTIES SOVERSION 1.0)
 
 if(APPLE)
@@ -79,8 +85,8 @@ install(FILES
     COMPONENT dev)
 
 install(TARGETS Mesh
-    LIBRARY
-    DESTINATION lib)
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib)
 
 
 configure_file(MeshLibConfig.cmake.in
