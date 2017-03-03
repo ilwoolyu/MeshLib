@@ -1,8 +1,13 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(Mesh)
+set(PROJECT_NAME Mesh)
+project(${PROJECT_NAME})
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY lib)
+
+SET(VERSION_MAJOR "1")
+SET(VERSION_MINOR "0")
+SET(VERSION_PATCH "0")
 
 # recursive call: header directories
 MACRO(HEADER_DIRECTORIES return_list)
@@ -41,5 +46,52 @@ set(SRC_GEOD_FILES src/Geodesic/Geodesic.cpp src/Geodesic/GeodesicA.cpp
 	src/Geodesic/gw/gw_geodesic/GW_TriangularInterpolation_Linear.cpp
 	src/Geodesic/gw/gw_geodesic/GW_TriangularInterpolation_Quadratic.cpp)
 
-add_library(Mesh SHARED ${SRC_FILES} ${SRC_UTIL_FILES} ${SRC_GEOD_FILES})
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
+
+if(BUILD_SHARED_LIBS)
+	set(BUILD_SHARED SHARED)
+endif(BUILD_SHARED_LIBS)
+
+add_library(Mesh ${BUILD_SHARED} ${SRC_FILES} ${SRC_UTIL_FILES} ${SRC_GEOD_FILES})
 set_target_properties(Mesh PROPERTIES SOVERSION 1.0)
+
+if(APPLE)
+    # use, i.e. don't skip the full RPATH for the build tree
+    SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+
+    # when building, don't use the install RPATH already
+    # (but later on when installing)
+    SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+
+    # add the automatically determined parts of the RPATH
+    # which point to directories outside the build tree to the install RPATH
+    SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+
+    # the RPATH to be used when installing, but only if it's not a system directory
+    LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+    IF("${isSystemDir}" STREQUAL "-1")
+       SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    ENDIF("${isSystemDir}" STREQUAL "-1")
+endif(APPLE)
+
+FILE(GLOB_RECURSE MESHLIB_HEADERS include/*.h)
+
+install(FILES
+    ${MESHLIB_HEADERS}
+    DESTINATION include
+    COMPONENT dev)
+
+install(TARGETS Mesh
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib)
+
+
+configure_file(MeshLibConfig.cmake.in
+ "${PROJECT_BINARY_DIR}/MeshLibConfig.cmake" @ONLY)
+install(FILES
+    ${PROJECT_BINARY_DIR}/MeshLibConfig.cmake
+    DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/cmake/${PROJECT_NAME}-${VERSION_MAJOR}.${VERSION_MINOR}"
+    COMPONENT dev)
