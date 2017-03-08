@@ -540,7 +540,7 @@ void Mesh::openFile(const char *filename)
 	else if (!strcmp(format, "vtk")) mesh = new VtkIO(filename);
 	else
 	{
-		cout << "Not supoorted format!" << endl;
+		cout << "Not supported format!" << endl;
 		return;
 	}
 
