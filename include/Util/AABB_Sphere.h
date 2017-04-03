@@ -4,10 +4,10 @@
 *	Release: July 2011
 *	Update: Apr 2017
 *
-*	University of North Carolina at Chapel Hill
-*	Department of Computer Science
+*	Vanderbilt University
+*	Electrical Engineering and Computer Science
 *	
-*	Ilwoo Lyu, ilwoolyu@cs.unc.edu
+*	Ilwoo Lyu, ilwoo.lyu@vanderbilt.edu
 *************************************************/
 
 #include <vector>

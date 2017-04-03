@@ -56,8 +56,8 @@ int AABB_Sphere::closestFace(float *v, float *coeff, vector<int> &xcand, const f
 	
 	if (cand_all.empty()) return -1;
 
-    sort(cand_all.begin(), cand_all.end());
-    cand_all.erase(unique(cand_all.begin(), cand_all.end()), cand_all.end());
+	sort(cand_all.begin(), cand_all.end());
+	cand_all.erase(unique(cand_all.begin(), cand_all.end()), cand_all.end());
 
 	vector<int> cand;	// only consider unseen triangles
 	set_difference(cand_all.begin(), cand_all.end(), xcand.begin(), xcand.end(), inserter(cand, cand.begin()));
