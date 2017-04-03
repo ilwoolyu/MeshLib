@@ -36,7 +36,7 @@ int AABB_Sphere::closestFace(float *v, float *coeff)
 
 	int index = -1;
 	float rad = 0.0174533; // 0.0174533 rad = 1 degree
-	for (int trial = 0; index == -1 && trial <= 8; trial++)
+	for (int trial = 0; index == -1 && trial <= 9; trial++)
 	{
 		index = closestFace(v, coeff, xcand, rad * trial);
 		rad *= 2;

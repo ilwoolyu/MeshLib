@@ -1,7 +1,7 @@
 /*************************************************
 *	AABB_Sphere.h
 *
-*	Release: July 2011
+*	Release: March 2017
 *	Update: Apr 2017
 *
 *	Vanderbilt University
