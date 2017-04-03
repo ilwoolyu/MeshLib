@@ -45,7 +45,7 @@ int AABB_Sphere::closestFace(float *v, float *coeff)
 }
 int AABB_Sphere::closestFace(float *v, float *coeff, vector<int> &xcand, const float eps)
 {
-    int index = -1;
+	int index = -1;
 
 	float phi, theta;
 	Coordinate::cart2sph(v, &phi, &theta);
