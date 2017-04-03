@@ -1,8 +1,8 @@
 /*************************************************
-*	AABB.h
+*	AABB_Sphere.h
 *
 *	Release: July 2011
-*	Update: September 2015
+*	Update: Apr 2017
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
