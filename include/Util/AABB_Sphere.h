@@ -53,6 +53,7 @@ private:
 	void boundingBox(const Face &f, float *r);
 	void boundingBox(node *root);
 	void updateTree(node *root);
+	void deleteTree(node *root);
 };
 
 #endif

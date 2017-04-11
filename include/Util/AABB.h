@@ -2,7 +2,7 @@
 *	AABB.h
 *
 *	Release: July 2011
-*	Update: September 2015
+*	Update: April 2017
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
@@ -51,5 +51,7 @@ private:
 	void boundingBox(const Face &f, float *r);
 	void boundingBox(node *root);
 	void updateTree(node *root);
+	void deleteTree(node *root);
 };
-#endif
+
+#endif

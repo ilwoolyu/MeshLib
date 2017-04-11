@@ -2,7 +2,7 @@
 *	AABB.cpp
 *
 *	Release: July 2011
-*	Update: September 2015
+*	Update: April 2017
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
@@ -29,6 +29,8 @@ AABB::AABB(const Mesh *mesh)
 }
 AABB::~AABB(void)
 {
+	for (int i = 0; i < m_tree->cand.size(); i++) delete [] &m_tree->cand[i];
+	deleteTree(m_tree);
 }
 int AABB::closestFace(float *v, float *coeff, float range)
 {
@@ -321,4 +323,10 @@ void AABB::updateTree(node *root)
 	
 	boundingBox(root);
 }
+void AABB::deleteTree(node *root)
+{
+	if (root->left != NULL) deleteTree(root->left);
+	if (root->right != NULL) deleteTree(root->right);
 
+	delete root;
+}

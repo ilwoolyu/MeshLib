@@ -29,6 +29,8 @@ AABB_Sphere::AABB_Sphere(const Mesh *mesh)
 }
 AABB_Sphere::~AABB_Sphere(void)
 {
+	for (int i = 0; i < m_tree->cand.size(); i++) delete [] &m_tree->cand[i];
+	deleteTree(m_tree);
 }
 int AABB_Sphere::closestFace(float *v, float *coeff)
 {
@@ -377,5 +379,12 @@ void AABB_Sphere::updateTree(node *root)
 	
 	m_maxPhi = 2 * PI;
 	boundingBox(root);
+}
+void AABB_Sphere::deleteTree(node *root)
+{
+	if (root->left != NULL) deleteTree(root->left);
+	if (root->right != NULL) deleteTree(root->right);
+
+	delete root;
 }
 
