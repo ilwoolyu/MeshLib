@@ -76,11 +76,11 @@ int AABB_Sphere::closestFace(float *v, float *coeff, vector<int> &xcand, const f
 		// projection of v onto the triangle
 		float v_proj[3];
 		Vector N = Vector(a, b).cross(Vector(b, c)).unit();
-		const float *n = N.fv();
-		Vector V_proj = Vector(v) * (Vector(a) * N) / (Vector(v) * N);	// scaling a query vector
+		Vector V_proj = Vector(v) * ((Vector(a) * N) / (Vector(v) * N));	// scaling a query vector
 		
 		Coordinate::cart2bary((float *)a, (float *)b, (float *)c, (float *)V_proj.fv(), tcoeff);
-		if (tcoeff[0] >= 0 && tcoeff[1] >= 0 && tcoeff[2] >= 0)
+		float eps = -1e-5;	// allow a numeric error
+		if (tcoeff[0] >= eps && tcoeff[1] >= eps && tcoeff[2] >= eps)
 		{
 			// closest distance
 			float dist = Coordinate::dpoint2tri(a, b, c, v);
