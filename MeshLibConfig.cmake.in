@@ -3,11 +3,11 @@
 
 # Compute paths
 
-get_filename_component(Mesh_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(Mesh_CMAKE_LIB_DIR "${CMAKE_BINARY_DIR}" PATH)
+get_filename_component(Mesh_CMAKE_DIR "${CMAKE_SOURCE_DIR}" PATH)
 
-
-file(TO_CMAKE_PATH "${Mesh_CMAKE_DIR}/../../../include" Mesh_INCLUDE_DIRS)
-file(TO_CMAKE_PATH "${Mesh_CMAKE_DIR}/../../" Mesh_LIBRARY_DIRS)
+file(TO_CMAKE_PATH "${Mesh_CMAKE_DIR}/MeshLib/include/" Mesh_INCLUDE_DIRS)
+file(TO_CMAKE_PATH "${Mesh_CMAKE_LIB_DIR}/MeshLib" Mesh_LIBRARY_DIRS)
 
 include_directories(${Mesh_INCLUDE_DIRS})
 link_directories(${Mesh_LIBRARY_DIRS})
