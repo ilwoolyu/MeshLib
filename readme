@@ -1,4 +1,4 @@
-Mesh Library (MeshLib)
+#Mesh Library (MeshLib)
 
 Release on 2011 July
 
@@ -6,3 +6,5 @@ University of North Carolina at Chapel Hill
 Department of Computer Science
 
 Ilwoo Lyu, ilwoolyu@cs.unc.edu
+
+A collection of fundamental surface processing libraries.
