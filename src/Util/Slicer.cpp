@@ -63,10 +63,10 @@ Slicer::Slicer(void)
 Slicer::Slicer(const Mesh *mesh)
 {
 	m_mesh = mesh;
-	printf("AABB Tree Construction.. ");
+//	printf("AABB Tree Construction.. ");
 	initTree();
 	update();
-	printf("Done\n");
+//	printf("Done\n");
 }
 Slicer::~Slicer(void)
 {
@@ -214,6 +214,15 @@ void Slicer::getSlice(float *plist, int group)
 	for (int i = 0; i < m_group[group].size; i++)
 	{
 		memcpy(&plist[i * 3], iter->pos.fv(), sizeof(float) * 3);
+		iter = iter->next;
+	}
+}
+void Slicer::getSliceFaceIdx(int *plist, int group)
+{
+	Point *iter = m_group[group].begin;
+	for (int i = 0; i < m_group[group].size; i++)
+	{
+		plist[i] = iter->faceID;
 		iter = iter->next;
 	}
 }

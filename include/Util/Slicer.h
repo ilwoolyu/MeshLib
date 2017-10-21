@@ -52,6 +52,7 @@ public:
 	~Slicer(void);
 	int slicing(const float a, const float b, const float c, const float d);
 	void getSlice(float *plist, int group);
+	void getSliceFaceIdx(int *plist, int group);
 	const float *getEdgeID(int id, int group);
 	int size(int group);
 

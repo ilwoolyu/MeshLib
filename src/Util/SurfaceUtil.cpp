@@ -2,7 +2,7 @@
 *	SurfaceUtil.cpp
 *
 *	Release: February 2015
-*	Update: July 2016
+*	Update: Jun 2017
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
@@ -35,7 +35,7 @@ void SurfaceUtil::smoothing(const Mesh *mesh, int iter, double *data)
 	for (int i = 0; i < iter; i++) smoothing(mesh, data);
 }
 
-void SurfaceUtil::curvature(const Mesh *mesh, double *cmin, double *cmax, double **umin, double **umax)
+void SurfaceUtil::curvature(const Mesh *mesh, double *cmin, double *cmax, double **umin, double **umax, int nIterSmoothingTensor)
 {
 	const int n = mesh->nVertex();
 
@@ -55,7 +55,7 @@ void SurfaceUtil::curvature(const Mesh *mesh, double *cmin, double *cmax, double
 	tensor(mesh, Tv);
 
 	// smoothing
-//	smoothingTensor(mesh, Tv, 200);
+	if (nIterSmoothingTensor > 0) smoothingTensor(mesh, Tv, nIterSmoothingTensor);
 	
 	double *work_min, *work_max;
 	bool minNull = (umin == NULL), maxNull = (umax == NULL);
@@ -95,7 +95,7 @@ void SurfaceUtil::curvature(const Mesh *mesh, double *cmin, double *cmax, double
 	}
 }
 
-void SurfaceUtil::curvature(const Mesh *mesh, float *cmin, float *cmax, float **umin, float **umax)
+void SurfaceUtil::curvature(const Mesh *mesh, float *cmin, float *cmax, float **umin, float **umax, int nIterSmoothingTensor)
 {
 	const int n = mesh->nVertex();
 	double *cmin_d = new double[n];
@@ -109,7 +109,7 @@ void SurfaceUtil::curvature(const Mesh *mesh, float *cmin, float *cmax, float **
 		umin_d[i] = &work_min[i * 3];
 		umax_d[i] = &work_max[i * 3];
 	}
-	curvature(mesh, cmin_d, cmax_d, umin_d, umax_d);
+	curvature(mesh, cmin_d, cmax_d, umin_d, umax_d, nIterSmoothingTensor);
 	for (int i = 0; i < n; i++)
 	{
 		cmin[i] = (float)cmin_d[i];
@@ -127,6 +127,142 @@ void SurfaceUtil::curvature(const Mesh *mesh, float *cmin, float *cmax, float **
 	delete [] umax_d;
 	delete [] work_min;
 	delete [] work_max;
+}
+
+void SurfaceUtil::sphere(Mesh *mesh, int type, int max_iter)
+{
+	const int n = mesh->nVertex();
+	float **w = new float*[n];
+	Vector *newv = new Vector[n];
+	int c = 0;
+	for (int i = 0; i < n; i++) c += mesh->vertex(i)->nNeighbor();
+	float *work = new float[c]; memset(work, 0, sizeof(float) * c);
+	c = 0;
+	for (int i = 0; i < n; i++)
+	{
+		w[i] = &work[c];
+		c += mesh->vertex(i)->nNeighbor();
+	}
+	mesh->centering();
+	bool nInv;
+
+	if (type == 0)
+	{
+		// area preservation
+		for (int i = 0; i < mesh->nFace(); i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				int id = mesh->face(i)->list(j);
+				int id1 = mesh->face(i)->list((j + 1) % 3);
+				int id2 = mesh->face(i)->list((j + 2) % 3);
+				Vector P = Vector(mesh->vertex(id)->fv(), mesh->vertex(id1)->fv());
+				Vector Q = Vector(mesh->vertex(id)->fv(), mesh->vertex(id2)->fv());
+				
+				// angle
+				/*float x = P.unit() * Q.unit();
+				float weight = max(x / sqrt(1 - x * x), 1e-1);
+				double weight = max(1 / tan(acos(x)), 1e-1);*/
+
+				float weight = P.cross(Q).norm() / 2 / 12;
+				for (int k = 0; k < mesh->vertex(id1)->nNeighbor(); k++)
+					if (mesh->vertex(id1)->list(k) == id2) w[id1][k] += weight;
+				for (int k = 0; k < mesh->vertex(id2)->nNeighbor(); k++)
+					if (mesh->vertex(id2)->list(k) == id1) w[id2][k] += weight;
+			}
+		}
+	}
+	else
+	{
+		// angle preservation
+		for (int i = 0; i < n; i++)
+		{
+			int nn = mesh->vertex(i)->nNeighbor();
+			for (int j = 0; j < nn; j++)
+			{
+				int id1 = mesh->vertex(i)->list(j);
+				int id2 = mesh->vertex(i)->list((j + 1) % nn);
+				Vector P = Vector(mesh->vertex(i)->fv(), mesh->vertex(id1)->fv());
+				Vector Q = Vector(mesh->vertex(i)->fv(), mesh->vertex(id2)->fv());
+
+				double x = P.unit() * Q.unit();
+				double weight = std::max(x / sqrt(1 - x * x), 1e-1);
+				//double weight = max(1 / tan(acos(x)), 1e-1);
+
+				for (int k = 0; k < mesh->vertex(id1)->nNeighbor(); k++)
+					if (mesh->vertex(id1)->list(k) == id2) w[id1][k] += weight;
+				for (int k = 0; k < mesh->vertex(id2)->nNeighbor(); k++)
+					if (mesh->vertex(id2)->list(k) == id1) w[id2][k] += weight;
+			}
+		}
+	}
+	for (int i = 0; i < n; i++)
+	{
+		int nn = mesh->vertex(i)->nNeighbor();
+		float sum = 0;
+		for (int j = 0; j < nn; j++) sum += w[i][j];
+		for (int j = 0; j < nn; j++) w[i][j] /= sum;
+	}
+
+	for (int i = 0; i < n; i++)
+	{
+		Vertex *v = (Vertex *)mesh->vertex(i);
+		v->setVertex(Vector(v->fv()).unit().fv());
+	}
+
+	c = 0;
+	do
+	{
+		/*mesh->updateNormal();
+		for (int i = 0; i < n; i++)
+			inv[i] = Vector(mesh->vertex(i)->fv()) * Vector(mesh->normal(i)->fv()) < 0;*/
+		nInv = false;
+		for (int i = 0; i < n; i++)
+		{
+			const int *neighbor = mesh->vertex(i)->list();
+			const int nn = mesh->vertex(i)->nNeighbor();
+
+			if (type == 0)
+				newv[i] = mesh->vertex(i)->fv();	// area preservation
+			else
+				newv[i] = Vector({0, 0, 0});	// angle preservation
+			
+			for (int j = 0; j < nn; j++)
+				newv[i] += Vector(mesh->vertex(neighbor[j])->fv()) * w[i][j];
+			newv[i].unit();
+		}
+		for (int i = 0; i < n; i++)
+		{
+			Vertex *v = (Vertex *)mesh->vertex(i);
+			v->setVertex(newv[i].fv());
+		}
+		for (int i = 0; i < mesh->nFace() && !nInv; i++)
+		{
+			Vector V0(mesh->vertex(mesh->face(i)->list(0))->fv());
+			Vector V1(mesh->vertex(mesh->face(i)->list(1))->fv());
+			Vector V2(mesh->vertex(mesh->face(i)->list(2))->fv());
+			Vector V3 = V0 + V1 + V2;
+			nInv = ((V1 - V0).cross(V2 - V0) * V3 < 0);
+		}
+		c++;
+	} while (nInv && c < max_iter);
+
+	c = 0;
+	for (int i = 0; i < mesh->nFace(); i++)
+	{
+		Vector V0(mesh->vertex(mesh->face(i)->list(0))->fv());
+		Vector V1(mesh->vertex(mesh->face(i)->list(1))->fv());
+		Vector V2(mesh->vertex(mesh->face(i)->list(2))->fv());
+		Vector V3 = V0 + V1 + V2;
+		if ((V1 - V0).cross(V2 - V0) * V3 < 0) c++;
+	}
+
+	mesh->updateNormal();
+
+	//delete [] inv;
+	delete [] newv;
+	delete [] work;
+	delete [] w;
 }
 
 void SurfaceUtil::smoothing(Mesh *mesh)

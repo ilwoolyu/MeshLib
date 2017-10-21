@@ -2,7 +2,7 @@
 *	Geom.cpp
 *
 *	Release: July 2011
-*	Update: August 2016
+*	Update: October 2017
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
@@ -219,6 +219,209 @@ bool MathVector::operator >(const MathVector &v) const
 		return m_vector[0] > v.m_vector[0];
 }
 
+MathVectorD::MathVectorD(void)
+{
+	m_vector[0] = m_vector[1] = m_vector[2] = 0;
+}
+
+MathVectorD::MathVectorD(const double *v)
+{
+	m_vector[0] = v[0];
+	m_vector[1] = v[1];
+	m_vector[2] = v[2];
+}
+
+MathVectorD::MathVectorD(const double *v1, const double *v2)
+{
+	m_vector[0] = v2[0] - v1[0];
+	m_vector[1] = v2[1] - v1[1];
+	m_vector[2] = v2[2] - v1[2];
+}
+
+MathVectorD::MathVectorD(const double v1, const double v2, const double v3)
+{
+	m_vector[0] = v1;
+	m_vector[1] = v2;
+	m_vector[2] = v3;
+}
+
+MathVectorD::MathVectorD(const int v1, const int v2, const int v3)
+{
+	m_vector[0] = (const double)v1;
+	m_vector[1] = (const double)v2;
+	m_vector[2] = (const double)v3;
+}
+
+MathVectorD::MathVectorD(const MathVectorD &v)
+{
+	m_vector[0] = v.m_vector[0];
+	m_vector[1] = v.m_vector[1];
+	m_vector[2] = v.m_vector[2];
+}
+
+MathVectorD::~MathVectorD(void)
+{
+}
+
+MathVectorD MathVectorD::cross(const MathVectorD v)
+{
+	MathVectorD p;
+	p.m_vector[0] = m_vector[1] * v.m_vector[2] - m_vector[2] * v.m_vector[1];
+	p.m_vector[1] = m_vector[2] * v.m_vector[0] - m_vector[0] * v.m_vector[2];
+	p.m_vector[2] = m_vector[0] * v.m_vector[1] - m_vector[1] * v.m_vector[0];
+	return p;
+}
+
+double MathVectorD::norm(void)
+{
+	return sqrt(m_vector[0] * m_vector[0] + m_vector[1] * m_vector[1] + m_vector[2] * m_vector[2]);
+}
+
+MathVectorD MathVectorD::unit(void)
+{
+	double s = norm();
+	if (s > 0)
+	{
+		m_vector[0] /= s;
+		m_vector[1] /= s;
+		m_vector[2] /= s;
+	}
+	return *this;
+}
+
+MathVectorD MathVectorD::trunc()
+{
+	m_vector[0] = floor(m_vector[0]);
+	m_vector[1] = floor(m_vector[1]);
+	m_vector[2] = floor(m_vector[2]);
+
+	return *this;
+}
+
+const double * MathVectorD::fv(void)
+{
+	return m_vector;
+}
+
+MathVectorD MathVectorD::operator +(const MathVectorD &v)
+{
+	return MathVectorD(m_vector[0] + v.m_vector[0], m_vector[1] + v.m_vector[1], m_vector[2] + v.m_vector[2]);
+}
+
+MathVectorD MathVectorD::operator -(const MathVectorD &v)
+{
+	return MathVectorD(m_vector[0] - v.m_vector[0], m_vector[1] - v.m_vector[1], m_vector[2] - v.m_vector[2]);
+}
+
+MathVectorD MathVectorD::operator *(const double v)
+{
+	return MathVectorD(m_vector[0] * v, m_vector[1] * v, m_vector[2] * v);
+}
+
+double MathVectorD::operator *(const MathVectorD &v)
+{
+	return m_vector[0] * v.m_vector[0] + m_vector[1] * v.m_vector[1] + m_vector[2] * v.m_vector[2];
+}
+
+MathVectorD MathVectorD::operator /(const double v)
+{
+	return MathVectorD(m_vector[0] / v, m_vector[1] / v, m_vector[2] / v);
+}
+
+MathVectorD MathVectorD::operator =(const double *v)
+{
+	m_vector[0] = v[0];
+	m_vector[1] = v[1];
+	m_vector[2] = v[2];
+	return *this;
+}
+
+MathVectorD MathVectorD::operator =(const int *v)
+{
+	m_vector[0] = (double)v[0];
+	m_vector[1] = (double)v[1];
+	m_vector[2] = (double)v[2];
+	return *this;
+}
+
+MathVectorD MathVectorD::operator =(const double v)
+{
+	m_vector[0] = v;
+	m_vector[1] = v;
+	m_vector[2] = v;
+	return *this;
+}
+
+const double * MathVectorD::operator ()(void)
+{
+	return m_vector;
+}
+
+double MathVectorD::operator[] (int id)
+{
+	return m_vector[id];
+}
+
+const MathVectorD & MathVectorD::operator +=(const MathVectorD &v)
+{
+	m_vector[0] += v.m_vector[0];
+	m_vector[1] += v.m_vector[1];
+	m_vector[2] += v.m_vector[2];
+	return *this;
+}
+
+const MathVectorD & MathVectorD::operator -=(const MathVectorD &v)
+{
+	m_vector[0] -= v.m_vector[0];
+	m_vector[1] -= v.m_vector[1];
+	m_vector[2] -= v.m_vector[2];
+	return *this;
+}
+
+const MathVectorD & MathVectorD::operator *=(const double v)
+{
+	m_vector[0] *= v; m_vector[1] *= v; m_vector[2] *= v;
+	return *this;
+}
+
+const MathVectorD & MathVectorD::operator /=(const double v)
+{
+	m_vector[0] /= v; m_vector[1] /= v; m_vector[2] /= v;
+	return *this;
+}
+
+bool MathVectorD::operator ==(const MathVectorD &v) const
+{
+	return (m_vector[0] == v.m_vector[0]) && (m_vector[1] == v.m_vector[1]) && (m_vector[2] == v.m_vector[2]);
+}
+
+bool MathVectorD::operator !=(const MathVectorD &v) const
+{
+	return !(m_vector[0] == v.m_vector[0]) && (m_vector[1] == v.m_vector[1]) && (m_vector[2] == v.m_vector[2]);
+}
+
+bool MathVectorD::operator <(const MathVectorD &v) const
+{
+	if (m_vector[0] == v.m_vector[0])
+		if (m_vector[1] == v.m_vector[1])
+			return m_vector[2] < v.m_vector[2];
+		else
+			return m_vector[1] < v.m_vector[1];
+	else
+		return m_vector[0] < v.m_vector[0];
+}
+
+bool MathVectorD::operator >(const MathVectorD &v) const
+{
+	if (m_vector[0] == v.m_vector[0])
+		if (m_vector[1] == v.m_vector[1])
+			return m_vector[2] > v.m_vector[2];
+		else
+			return m_vector[1] > v.m_vector[1];
+	else
+		return m_vector[0] > v.m_vector[0];
+}
+
 void Coordinate::cart2sph(const double *v, double *phi, double *theta)
 {
 	// phi: azimuth, theta: elevation
@@ -240,6 +443,15 @@ void Coordinate::sph2cart(float phi, float theta, float *v)
 	// phi: azimuth, theta: elevation
 	v[2] = sin(theta);
 	float coselev = cos(theta);
+	v[0] = coselev * cos(phi);
+	v[1] = coselev * sin(phi);
+}
+
+void Coordinate::sph2cart(double phi, double theta, double *v)
+{
+	// phi: azimuth, theta: elevation
+	v[2] = sin(theta);
+	double coselev = cos(theta);
 	v[0] = coselev * cos(phi);
 	v[1] = coselev * sin(phi);
 }
@@ -268,12 +480,35 @@ void Coordinate::cart2bary(float *a, float *b, float *c, float *p, float *coeff)
 	MathVector PP = A * coeff[0] + B * coeff[1] + C * coeff[2];
 	printf("recons: %f %f %f\n", PP.fv()[0],PP.fv()[1],PP.fv()[2]);*/
 }
+void Coordinate::cart2bary(double *a, double *b, double *c, double *p, double *coeff)
+{
+	// a counter clockwise order
+	MathVectorD A(a), B(b), C(c), P(p);
+	MathVectorD N((B-A).cross(C-A));
+
+	double ABC = N * N / N.norm();
+	N.unit();
+	coeff[0] = (B-P).cross(C-P) * N / ABC;
+	coeff[1] = (C-P).cross(A-P) * N / ABC;
+	coeff[2] = 1 - coeff[0] - coeff[1];
+}
+
 void Coordinate::rotPoint(const float *p0, const float *mat, float *p1)
 {
 	for (int i = 0; i < 3; i++)
 		p1[i] = mat[i * 3 + 0] * p0[0] + mat[i * 3 + 1] * p0[1] + mat[i * 3 + 2] * p0[2];
 }
 void Coordinate::rotPointInv(const float *p0, const float *mat, float *p1)
+{
+	for (int i = 0; i < 3; i++)
+		p1[i] = mat[i] * p0[0] + mat[i + 3] * p0[1] + mat[i + 6] * p0[2];
+}
+void Coordinate::rotPoint(const double *p0, const double *mat, double *p1)
+{
+	for (int i = 0; i < 3; i++)
+		p1[i] = mat[i * 3 + 0] * p0[0] + mat[i * 3 + 1] * p0[1] + mat[i * 3 + 2] * p0[2];
+}
+void Coordinate::rotPointInv(const double *p0, const double *mat, double *p1)
 {
 	for (int i = 0; i < 3; i++)
 		p1[i] = mat[i] * p0[0] + mat[i + 3] * p0[1] + mat[i + 6] * p0[2];
@@ -289,6 +524,26 @@ void Coordinate::rotation(const float *axis, const float theta, float *mat)
 	RAxis.unit();
 
 	float A[9] = {0, -RAxis[2], RAxis[1], RAxis[2], 0, -RAxis[0], -RAxis[1], RAxis[0], 0};
+
+	// A * sin(-theta)
+	for (int i = 0; i < 9; i++)
+		mat[i] += A[i] * sin(theta);
+	// A * A * (1 - cos(-theta))
+	for (int i = 0; i < 9; i++)
+		for (int j = 0; j < 3; j++)
+			mat[i] += A[j + (i / 3) * 3] * A[j * 3 + i % 3] * (1 - cos(theta));
+}
+void Coordinate::rotation(const double *axis, const double theta, double *mat)
+{
+	memset(mat, 0, sizeof(double) * 9);
+
+	mat[0] = 1; mat[4] = 1; mat[8] = 1;
+
+	MathVectorD RAxis(axis);
+	if (RAxis.norm() == 0) return;
+	RAxis.unit();
+
+	double A[9] = {0, -RAxis[2], RAxis[1], RAxis[2], 0, -RAxis[0], -RAxis[1], RAxis[0], 0};
 
 	// A * sin(-theta)
 	for (int i = 0; i < 9; i++)
@@ -457,6 +712,13 @@ int Coordinate::intersection(const float *t0, const float *t1, const float *t2, 
 void Coordinate::proj2plane(const float a, const float b, const float c, const float d, const float *p0, float *p1)
 {
 	float portion = (a * p0[0] + b * p0[1] + c * p0[2] + d) / (a * a + b * b + c * c);
+	p1[0] = p0[0] - a * portion;
+	p1[1] = p0[1] - b * portion;
+	p1[2] = p0[2] - c * portion;
+}
+void Coordinate::proj2plane(const double a, const double b, const double c, const double d, const double *p0, double *p1)
+{
+	double portion = (a * p0[0] + b * p0[1] + c * p0[2] + d) / (a * a + b * b + c * c);
 	p1[0] = p0[0] - a * portion;
 	p1[1] = p0[1] - b * portion;
 	p1[2] = p0[2] - c * portion;
@@ -870,10 +1132,21 @@ float Statistics::sum(float *A, int n)
 	for (int i = 0; i < n; i++) res += A[i];
 	return res;
 }
+double Statistics::sum(double *A, int n)
+{
+	double res = 0;
+	for (int i = 0; i < n; i++) res += A[i];
+	return res;
+}
 float Statistics::mean(float *A, int n)
 {
 	return sum(A, n) / (float)n;
 }
+double Statistics::mean(double *A, int n)
+{
+	return sum(A, n) / (double)n;
+}
+
 float Statistics::min(float *A, int n)
 {
 	float res = A[0];
@@ -881,9 +1154,24 @@ float Statistics::min(float *A, int n)
 		if (res > A[i]) res = A[i];
 	return res;
 }
+double Statistics::min(double *A, int n)
+{
+	double res = A[0];
+	for (int i = 1; i < n; i++)
+		if (res > A[i]) res = A[i];
+	return res;
+}
+
 float Statistics::max(float *A, int n)
 {
 	float res = A[0];
+	for (int i = 1; i < n; i++)
+		if (res < A[i]) res = A[i];
+	return res;
+}
+double Statistics::max(double *A, int n)
+{
+	double res = A[0];
 	for (int i = 1; i < n; i++)
 		if (res < A[i]) res = A[i];
 	return res;
@@ -894,11 +1182,23 @@ void Statistics::sum(float *A, int n, int dim, float *res)
 		for (int j = 0; j < dim; j++)
 			res[j] += A[i * dim + j];
 }
+void Statistics::sum(double *A, int n, int dim, double *res)
+{
+	for (int i = 0; i < n; i++)
+		for (int j = 0; j < dim; j++)
+			res[j] += A[i * dim + j];
+}
 void Statistics::mean(float *A, int n, int dim, float *res)
 {
 	sum(A, n, dim, res);
 	for (int i = 0; i < dim; i++)
 		res[i] /= (float)n;
+}
+void Statistics::mean(double *A, int n, int dim, double *res)
+{
+	sum(A, n, dim, res);
+	for (int i = 0; i < dim; i++)
+		res[i] /= (double)n;
 }
 float Statistics::correlation(float *A, float *B, int n)
 {
@@ -915,6 +1215,13 @@ float Statistics::var(float *A, int n)
 {
 	float m = mean(A, n);
 	float res = 0;
+	for (int i = 0; i < n; i++) res += (A[i] - m) * (A[i] - m) / n;
+	return res;
+}
+double Statistics::var(double *A, int n)
+{
+	double m = mean(A, n);
+	double res = 0;
 	for (int i = 0; i < n; i++) res += (A[i] - m) * (A[i] - m) / n;
 	return res;
 }
@@ -998,6 +1305,33 @@ void Statistics::wcov_trans(float *p, int n, int dim, float *M, float *w)
 
 	delete m;
 }
+void Statistics::wcov_trans(double *p, int n, int dim, double *M, double *w)
+{
+	double *x, *y;
+	double *m = new double[dim];
+
+	memset(m, 0, sizeof(double) * dim);
+
+	// mean
+	mean(p, n, dim, m);
+
+	// covariance matrix (spd)
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = i; j < n; j++)
+		{
+			x = &p[i * dim];
+			y = &p[j * dim];
+			for (int k = 0; k < dim; k++)
+			{
+				M[i * n + j] += (x[k] - m[k]) * (y[k] - m[k]) * w[k] * w[k] / (double)(n - 1);
+			}
+			M[j * n + i] = M[i * n + j];
+		}
+	}
+
+	delete m;
+}
 float Statistics::NCC(float *A, float *B, int n)
 {
 	return correlation(A, B, n) / sqrt(correlation(A, A, n)) / sqrt(correlation(B, B, n));
@@ -1041,6 +1375,22 @@ float Statistics::median(float *v, int n)
 	// copy to tmp
 	float *tmp = new float[n];
 	memcpy(tmp, v, sizeof(float) * n);
+	// sort
+	std::sort(tmp, tmp + n);
+	//median
+	float med;
+	if (n % 2 == 1) med = tmp[n / 2];
+	else med = (tmp[n / 2 - 1] + tmp[n / 2]) * 0.5f;
+
+	delete [] tmp;
+
+	return med;
+}
+double Statistics::median(double *v, int n)
+{
+	// copy to tmp
+	double *tmp = new double[n];
+	memcpy(tmp, v, sizeof(double) * n);
 	// sort
 	std::sort(tmp, tmp + n);
 	//median

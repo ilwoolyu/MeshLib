@@ -10,6 +10,7 @@
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
+#include <iomanip>
 #include "VtkIO.h"
 #include "fstream"
 #include "string.h"
@@ -36,7 +37,7 @@ void VtkIO::read(const char *filename)
 	int nFace = 0;
 	int nNormal = 0;
 	int nColor = 0;
-	char buf[255];
+	char buf[8192];
 	
 	ifstream fin(filename);
 	while (!fin.eof())
@@ -186,12 +187,12 @@ void VtkIO::read(const char *filename)
 void VtkIO::save(const char *filename, const Mesh *mesh, bool normal, bool binary)
 {
 	ofstream fout;
-	fout.precision(12);
+	fout.precision(11);
 	
 	if (!binary) fout.open(filename, ios::out);
 	else fout.open(filename, ios::out | ios::binary);
 	fout << "# vtk DataFile Version 3.0" << endl;
-	fout << "vtk_output" << endl;
+	fout << "vtk output" << endl;
 	if (!binary) fout << "ASCII" << endl;
 	else fout << "BINARY" << endl;
 	fout << "DATASET POLYDATA" << endl;
@@ -209,11 +210,11 @@ void VtkIO::save(const char *filename, const Mesh *mesh, bool normal, bool binar
 		}
 		else
 		{
-			fout << v[0] << " " << v[1] << " " << v[2];
+			fout << std::fixed << std::setprecision(9) << std::setfill( '0' ) << v[0] << " " << v[1] << " " << v[2];
 			fout << endl;
 		}
 	}
-	fout << endl;
+	//fout << endl;
 
 	fout << "POLYGONS " << mesh->nFace() << " " << mesh->nFace() * 4 << endl;
 	for (int i = 0; i < mesh->nFace(); i++)

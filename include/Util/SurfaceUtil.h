@@ -2,7 +2,7 @@
 *	SurfaceUtil.h
 *
 *	Release: February 2015
-*	Update: May 2016
+*	Update: Jun 2017
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
@@ -47,8 +47,9 @@ public:
 	static void smoothing(Mesh *mesh, float sigma, int iter);
 	static void smoothing(const Mesh *mesh, int iter, float *data);
 	static void smoothing(const Mesh *mesh, int iter, double *data);
-	static void curvature(const Mesh *mesh, double *cmin, double *cmax, double **umin = NULL, double **umax = NULL);
-	static void curvature(const Mesh *mesh, float *cmin, float *cmax, float **umin = NULL, float **umax = NULL);
+	static void curvature(const Mesh *mesh, double *cmin, double *cmax, double **umin = NULL, double **umax = NULL, int nIterSmoothingTensor = 0);
+	static void curvature(const Mesh *mesh, float *cmin, float *cmax, float **umin = NULL, float **umax = NULL, int nIterSmoothingTensor = 0);
+	static void sphere(Mesh *mesh, int type = 0, int max_iter = 10000);
 
 private:
 	static void smoothing(Mesh *mesh);
