@@ -28,9 +28,9 @@ using namespace GW;
 class GeodesicA
 {
 public:
-	GeodesicA(const Mesh::Mesh *mesh = NULL);
+	GeodesicA(const Mesh *mesh = NULL);
 	~GeodesicA(void);
-	void setupMesh(const Mesh::Mesh *mesh);
+	void setupMesh(const Mesh *mesh);
 	void setupOptions(const double *Ww = NULL, const double *H = NULL, const double *L = NULL, const double *values = NULL);
 	void perform_front_propagation(int start_point, int end_point = -1);
 	void perform_front_propagation(int start_point, double dmax);
@@ -56,9 +56,9 @@ private:
 	static GW_Bool StopMarchingCallback(GW_GeodesicVertex& Vert);
 	static GW_Bool InsersionCallback(GW_GeodesicVertex& Vert, GW_Float rNewDist);
 	static GW_Float HeuristicCallback(GW_GeodesicVertex& Vert);
-	void setupCurvature(const Mesh::Mesh *mesh);
+	void setupCurvature(const Mesh *mesh);
 	void setupCurvatureTensor(void);
-	double vertexArea(const Mesh::Mesh *mesh, int id);
+	double vertexArea(const Mesh *mesh, int id);
 
 private:
 	int nverts; 
@@ -92,7 +92,7 @@ private:
 	double area_max;	// max area
 	double area_prop;	// propagation area
 	static GeodesicA *instance;
-	GW_GeodesicMeshA Mesh;
+	GW_GeodesicMeshA m_Mesh;
 };
 
 #endif
