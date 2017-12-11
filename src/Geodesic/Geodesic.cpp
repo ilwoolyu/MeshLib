@@ -34,7 +34,7 @@
 #include <string>
 #include "Geodesic.h"
 
-Geodesic::Geodesic(const Mesh::Mesh *mesh)
+Geodesic::Geodesic(const Mesh *mesh)
 {
 	nverts = -1;
 	nfaces = -1;
@@ -101,7 +101,7 @@ GW_Float Geodesic::HeuristicCallback( GW_GeodesicVertex& Vert )
 	return instance->H[i];
 }
 
-void Geodesic::setupMesh(const Mesh::Mesh *mesh)
+void Geodesic::setupMesh(const Mesh *mesh)
 {
 	// arg1 : vertex
 	nverts = mesh->nVertex();
@@ -109,28 +109,28 @@ void Geodesic::setupMesh(const Mesh::Mesh *mesh)
 	nfaces = mesh->nFace();
 
 	// create the mesh
-	Mesh.SetNbrVertex(nverts);
+	m_Mesh.SetNbrVertex(nverts);
 	for(int i = 0; i < nverts; ++i)
 	{
-		GW_GeodesicVertex& vert = (GW_GeodesicVertex&) Mesh.CreateNewVertex();
+		GW_GeodesicVertex& vert = (GW_GeodesicVertex&)m_Mesh.CreateNewVertex();
 		vert.SetPosition(GW_Vector3D((*mesh->vertex(i))[0],(*mesh->vertex(i))[1],(*mesh->vertex(i))[2]));
-		Mesh.SetVertex(i, &vert);
+		m_Mesh.SetVertex(i, &vert);
 	}
-	Mesh.SetNbrFace(nfaces);
+	m_Mesh.SetNbrFace(nfaces);
 	for( int i = 0; i < nfaces; ++i)
 	{
-		GW_GeodesicFace& face = (GW_GeodesicFace&) Mesh.CreateNewFace();
-		GW_Vertex* v1 = Mesh.GetVertex((*mesh->face(i))[0]); GW_ASSERT(v1 != NULL);
-		GW_Vertex* v2 = Mesh.GetVertex((*mesh->face(i))[1]); GW_ASSERT(v2 != NULL);
-		GW_Vertex* v3 = Mesh.GetVertex((*mesh->face(i))[2]); GW_ASSERT(v3 != NULL);
+		GW_GeodesicFace& face = (GW_GeodesicFace&)m_Mesh.CreateNewFace();
+		GW_Vertex* v1 = m_Mesh.GetVertex((*mesh->face(i))[0]); GW_ASSERT(v1 != NULL);
+		GW_Vertex* v2 = m_Mesh.GetVertex((*mesh->face(i))[1]); GW_ASSERT(v2 != NULL);
+		GW_Vertex* v3 = m_Mesh.GetVertex((*mesh->face(i))[2]); GW_ASSERT(v3 != NULL);
 		face.SetVertex( *v1,*v2,*v3 );
-		Mesh.SetFace(i, &face);
+		m_Mesh.SetFace(i, &face);
 	}
-	Mesh.BuildConnectivity();
+	m_Mesh.BuildConnectivity();
 	
-	Mesh.RegisterWeightCallbackFunction(WeightCallback);
-	Mesh.RegisterForceStopCallbackFunction(StopMarchingCallback);
-	Mesh.RegisterVertexInsersionCallbackFunction(InsersionCallback);
+	m_Mesh.RegisterWeightCallbackFunction(WeightCallback);
+	m_Mesh.RegisterForceStopCallbackFunction(StopMarchingCallback);
+	m_Mesh.RegisterVertexInsersionCallbackFunction(InsersionCallback);
 	
 	// first ouput : distance
 	if (D != NULL) delete [] D;
@@ -165,15 +165,15 @@ void Geodesic::setupOptions(const double *_Ww, const double *_H, const double *_
 	values = _values;
 
 	if (H != NULL)
-		Mesh.RegisterHeuristicToGoalCallbackFunction(HeuristicCallback);
+		m_Mesh.RegisterHeuristicToGoalCallbackFunction(HeuristicCallback);
 	else
-		Mesh.RegisterHeuristicToGoalCallbackFunction(NULL);
+		m_Mesh.RegisterHeuristicToGoalCallbackFunction(NULL);
 	// initialize the distance of the starting points
 	if (values != NULL)
 	{
 		for (int i = 0; i < nstart; ++i)
 		{
-			GW_GeodesicVertex* v = (GW_GeodesicVertex*) Mesh.GetVertex((GW_U32) start_points[i]);
+			GW_GeodesicVertex* v = (GW_GeodesicVertex*)m_Mesh.GetVertex((GW_U32)start_points[i]);
 			GW_ASSERT(v != NULL);
 			v->SetDistance(values[i]);
 		}
@@ -221,23 +221,23 @@ void Geodesic::perform_front_propagation(const int *_start_points, int _nstart, 
 	dmax = _dmax;
 
 	// set up fast marching
-	Mesh.ResetGeodesicMesh();
+	m_Mesh.ResetGeodesicMesh();
 	for(int i = 0; i < nstart; ++i)
 	{
-		GW_GeodesicVertex* v = (GW_GeodesicVertex*)Mesh.GetVertex((GW_U32)start_points[i]);
+		GW_GeodesicVertex* v = (GW_GeodesicVertex*)m_Mesh.GetVertex((GW_U32)start_points[i]);
 		GW_ASSERT(v != NULL);
-		Mesh.AddStartVertex(*v);
+		m_Mesh.AddStartVertex(*v);
 	}
 		
-	Mesh.SetUpFastMarching();
+	m_Mesh.SetUpFastMarching();
 	
 	// perform fast marching
-	Mesh.PerformFastMarching();
+	m_Mesh.PerformFastMarching();
 	
 	// output result
 	for(int i = 0; i < nverts; ++i)
 	{
-		GW_GeodesicVertex* v = (GW_GeodesicVertex*)Mesh.GetVertex((GW_U32)i);
+		GW_GeodesicVertex* v = (GW_GeodesicVertex*)m_Mesh.GetVertex((GW_U32)i);
 		GW_ASSERT(v != NULL);
 		D[i] = v->GetDistance();
 		S[i] = v->GetState();

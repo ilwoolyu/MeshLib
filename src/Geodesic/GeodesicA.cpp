@@ -36,7 +36,7 @@
 #include "SurfaceUtil.h"
 #include "Util/Geom.h"
 
-GeodesicA::GeodesicA(const Mesh::Mesh *mesh)
+GeodesicA::GeodesicA(const Mesh *mesh)
 {
 	nverts = -1;
 	nfaces = -1;
@@ -175,7 +175,7 @@ GW_Float GeodesicA::HeuristicCallback( GW_GeodesicVertex& Vert )
 	return instance->H[i];
 }
 
-void GeodesicA::setupCurvature(const Mesh::Mesh *mesh)
+void GeodesicA::setupCurvature(const Mesh *mesh)
 {
 	int nv = mesh->nVertex();
 	m_cmin = new double[nv];
@@ -185,7 +185,7 @@ void GeodesicA::setupCurvature(const Mesh::Mesh *mesh)
 	SurfaceUtil::curvature(mesh, m_cmin, m_cmax, m_umin, m_umax);
 }
 
-void GeodesicA::setupMesh(const Mesh::Mesh *mesh)
+void GeodesicA::setupMesh(const Mesh *mesh)
 {
 	setupCurvature(mesh);
 	
@@ -199,28 +199,28 @@ void GeodesicA::setupMesh(const Mesh::Mesh *mesh)
 	nfaces = mesh->nFace();
 
 	// create the mesh
-	Mesh.SetNbrVertex(nverts);
+	m_Mesh.SetNbrVertex(nverts);
 	for(int i = 0; i < nverts; ++i)
 	{
-		GW_GeodesicVertex& vert = (GW_GeodesicVertex&) Mesh.CreateNewVertex();
+		GW_GeodesicVertex& vert = (GW_GeodesicVertex&)m_Mesh.CreateNewVertex();
 		vert.SetPosition(GW_Vector3D((*mesh->vertex(i))[0],(*mesh->vertex(i))[1],(*mesh->vertex(i))[2]));
-		Mesh.SetVertex(i, &vert);
+		m_Mesh.SetVertex(i, &vert);
 	}
-	Mesh.SetNbrFace(nfaces);
+	m_Mesh.SetNbrFace(nfaces);
 	for( int i = 0; i < nfaces; ++i)
 	{
-		GW_GeodesicFace& face = (GW_GeodesicFace&) Mesh.CreateNewFace();
-		GW_Vertex* v1 = Mesh.GetVertex((*mesh->face(i))[0]); GW_ASSERT(v1 != NULL);
-		GW_Vertex* v2 = Mesh.GetVertex((*mesh->face(i))[1]); GW_ASSERT(v2 != NULL);
-		GW_Vertex* v3 = Mesh.GetVertex((*mesh->face(i))[2]); GW_ASSERT(v3 != NULL);
+		GW_GeodesicFace& face = (GW_GeodesicFace&)m_Mesh.CreateNewFace();
+		GW_Vertex* v1 = m_Mesh.GetVertex((*mesh->face(i))[0]); GW_ASSERT(v1 != NULL);
+		GW_Vertex* v2 = m_Mesh.GetVertex((*mesh->face(i))[1]); GW_ASSERT(v2 != NULL);
+		GW_Vertex* v3 = m_Mesh.GetVertex((*mesh->face(i))[2]); GW_ASSERT(v3 != NULL);
 		face.SetVertex( *v1,*v2,*v3 );
-		Mesh.SetFace(i, &face);
+		m_Mesh.SetFace(i, &face);
 	}
-	Mesh.BuildConnectivity();
+	m_Mesh.BuildConnectivity();
 	
 	for(int i = 0; i < nverts; ++i)
 	{
-		GW_Vertex* v = Mesh.GetVertex(i);
+		GW_Vertex* v = m_Mesh.GetVertex(i);
 		v->BuildRawNormal();
 	}
 	
@@ -242,13 +242,13 @@ void GeodesicA::setupMesh(const Mesh::Mesh *mesh)
 	Lam2 = new double[nverts];
 	for (int i = 0; i < nverts; i++) V1[i] = &V1_[i * 3];
 
-	Mesh.RegisterV1CallbackFunction(V1Callback);
-	Mesh.RegisterLam1CallbackFunction(Lam1Callback);
-	Mesh.RegisterLam2CallbackFunction(Lam2Callback);
+	m_Mesh.RegisterV1CallbackFunction(V1Callback);
+	m_Mesh.RegisterLam1CallbackFunction(Lam1Callback);
+	m_Mesh.RegisterLam2CallbackFunction(Lam2Callback);
 	
-	Mesh.RegisterWeightCallbackFunction(WeightCallback);
-	Mesh.RegisterForceStopCallbackFunction(StopMarchingCallback);
-	Mesh.RegisterVertexInsersionCallbackFunction(InsersionCallback);
+	m_Mesh.RegisterWeightCallbackFunction(WeightCallback);
+	m_Mesh.RegisterForceStopCallbackFunction(StopMarchingCallback);
+	m_Mesh.RegisterVertexInsersionCallbackFunction(InsersionCallback);
 	
 	setupCurvatureTensor();
 
@@ -311,7 +311,7 @@ void GeodesicA::setTensor(const double **_u, const double *_lam1, const double *
 	for (int i = 0; i < nverts; i++)
 	{
 		GW_Vector3D V1_(_u[i][0], _u[i][1], _u[i][2]);
-		GW_Vector3D N = Mesh.GetVertex(i)->GetNormal();
+		GW_Vector3D N = m_Mesh.GetVertex(i)->GetNormal();
 		
 		// force orthogonal to normal
 		double p = N * V1_;
@@ -357,7 +357,7 @@ void GeodesicA::setupCurvatureTensor(void)
 	double m = FLT_MAX, M = 0;
 	for (int i = 0; i < nverts; i++)
 	{
-		GW_Vertex *v = Mesh.GetVertex(i);
+		GW_Vertex *v = m_Mesh.GetVertex(i);
 		//v->BuildCurvatureData();
 		//GW_Float cmin = v->GetMinCurv(), cmax = v->GetMaxCurv();
 		GW_Float cmin = m_cmin[i], cmax = m_cmax[i];
@@ -375,7 +375,7 @@ void GeodesicA::setupCurvatureTensor(void)
 	GW_Float a = 1, b = 100;
 	for (int i = 0; i < nverts; i++)
 	{
-		GW_Vertex *v = Mesh.GetVertex(i);
+		GW_Vertex *v = m_Mesh.GetVertex(i);
 		//GW_Vector3D dmin = v->GetMinCurvDirection(), dmax = v->GetMaxCurvDirection();
 		//GW_Float cmin = v->GetMinCurv(), cmax = v->GetMaxCurv();
 		const double *dmin = m_umin[i], *dmax = m_umax[i];
@@ -409,7 +409,7 @@ void GeodesicA::setupCurvatureTensor(void)
 	delete [] _lam2;
 }
 
-double GeodesicA::vertexArea(const Mesh::Mesh *mesh, int id)
+double GeodesicA::vertexArea(const Mesh *mesh, int id)
 {
 	const int *list = mesh->vertex(id)->list();
 	int nn = mesh->vertex(id)->nNeighbor();
@@ -454,15 +454,15 @@ void GeodesicA::setupOptions(const double *_Ww, const double *_H, const double *
 	values = _values;
 
 	if (H != NULL)
-		Mesh.RegisterHeuristicToGoalCallbackFunction(HeuristicCallback);
+		m_Mesh.RegisterHeuristicToGoalCallbackFunction(HeuristicCallback);
 	else
-		Mesh.RegisterHeuristicToGoalCallbackFunction(NULL);
+		m_Mesh.RegisterHeuristicToGoalCallbackFunction(NULL);
 	// initialize the distance of the starting points
 	if (values != NULL)
 	{
 		for (int i = 0; i < nstart; ++i)
 		{
-			GW_GeodesicVertex* v = (GW_GeodesicVertex*) Mesh.GetVertex((GW_U32) start_points[i]);
+			GW_GeodesicVertex* v = (GW_GeodesicVertex*)m_Mesh.GetVertex((GW_U32)start_points[i]);
 			GW_ASSERT(v != NULL);
 			v->SetDistance(values[i]);
 		}
@@ -512,23 +512,23 @@ void GeodesicA::perform_front_propagation(const int *_start_points, int _nstart,
 	dmax = _dmax;
 
 	// set up fast marching
-	Mesh.ResetGeodesicMesh();
+	m_Mesh.ResetGeodesicMesh();
 	for(int i = 0; i < nstart; ++i)
 	{
-		GW_GeodesicVertex* v = (GW_GeodesicVertex*)Mesh.GetVertex((GW_U32)start_points[i]);
+		GW_GeodesicVertex* v = (GW_GeodesicVertex*)m_Mesh.GetVertex((GW_U32)start_points[i]);
 		GW_ASSERT(v != NULL);
-		Mesh.AddStartVertex(*v);
+		m_Mesh.AddStartVertex(*v);
 	}
 	
-	Mesh.SetUpFastMarching();
+	m_Mesh.SetUpFastMarching();
 	
 	// perform fast marching
-	Mesh.PerformFastMarching();
+	m_Mesh.PerformFastMarching();
 	
 	// output result
 	for(int i = 0; i < nverts; ++i)
 	{
-		GW_GeodesicVertex* v = (GW_GeodesicVertex*)Mesh.GetVertex((GW_U32)i);
+		GW_GeodesicVertex* v = (GW_GeodesicVertex*)m_Mesh.GetVertex((GW_U32)i);
 		GW_ASSERT(v != NULL);
 		D[i] = v->GetDistance();
 		S[i] = v->GetState();

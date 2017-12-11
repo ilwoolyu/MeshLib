@@ -28,9 +28,9 @@ using namespace GW;
 class Geodesic
 {
 public:
-	Geodesic(const Mesh::Mesh *mesh = NULL);
+	Geodesic(const Mesh *mesh = NULL);
 	~Geodesic(void);
-	void setupMesh(const Mesh::Mesh *mesh);
+	void setupMesh(const Mesh *mesh);
 	void setupOptions(const double *Ww = NULL, const double *H = NULL, const double *L = NULL, const double *values = NULL);
 	void perform_front_propagation(int start_point, int end_point = -1);
 	void perform_front_propagation(int start_point, double dmax);
@@ -60,7 +60,7 @@ private:
 	int *Q;	// nearest neighbor
 	int nbr_iter;
 	static Geodesic *instance;
-	GW_GeodesicMesh Mesh;
+	GW_GeodesicMesh m_Mesh;
 };
 
 #endif
