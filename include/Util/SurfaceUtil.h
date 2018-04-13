@@ -18,7 +18,7 @@
 
 class SurfaceUtil
 {
-private:
+public:
 	// edge element
 	struct edge
 	{

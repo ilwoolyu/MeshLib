@@ -134,6 +134,7 @@ public:
 	void unit(void);
 	void rotation(const float *axis, float theta);
 	void rotation(const float *axis, float theta, float *v);
+	void setMesh(const float *vertex, const int *face, const float *normal, int nVertex, int nFace, int nNormal, bool hasNormal);
 	const int nFace(void) const;
 	const int nVertex(void) const;
 	const Face **face(void) const;

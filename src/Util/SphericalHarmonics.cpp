@@ -10,7 +10,7 @@
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
-#include <math.h>
+#include <cmath>
 #include "SphericalHarmonics.h"
 
 void SphericalHarmonics::basis(int degree, float *p, float *Y, int from)
@@ -38,7 +38,7 @@ void SphericalHarmonics::basis(int degree, float *p, float *Y, int from)
 
 		for (int m = 1; m <= l; m++)
 		{
-			double precoeff = lconstant * sqrt(1 / Series::factorial(l + m, l - m + 1));
+			double precoeff = lconstant * sqrt(1.0 / Series::factorial(l + m, l - m + 1));
 
 			if (m % 2 == 1) precoeff = -precoeff;
 			Y[center + m] = (float)(sqr2 * precoeff * Pm[m] * cos(m * phi));
@@ -59,7 +59,7 @@ void SphericalHarmonics::basis(int degree, double *p, double *Y, int from)
 	double *Pm = new double[degree + 1];
 
 	// square root of 2
-	const double sqr2 = sqrt(2.0f);
+	const double sqr2 = sqrt(2.0);
 
 	for (int l = from; l <= degree; l++)
 	{
@@ -73,7 +73,7 @@ void SphericalHarmonics::basis(int degree, double *p, double *Y, int from)
 
 		for (int m = 1; m <= l; m++)
 		{
-			double precoeff = lconstant * (double)sqrt(1 / Series::factorial(l + m, l - m + 1));
+			double precoeff = lconstant * sqrt(1.0 / Series::factorial(l + m, l - m + 1));
 
 			if (m % 2 == 1) precoeff = -precoeff;
 			Y[center + m] = sqr2 * precoeff * Pm[m] * cos(m * phi);
