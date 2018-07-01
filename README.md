@@ -1,7 +1,7 @@
 # MeshLib
 
 ## Description
-Mesh Library (MeshLib) - A collection of fundamental surface processing C++ libraries. The library is very light, which enables the users to handle surface processing easily. This collection is used for implementation of several surface-based applications (see the publication list below).
+Mesh Library (MeshLib) - A collection of fundamental surface processing C++ libraries. The library is very lightweight, which can enable the users to handle surface processing easily. This collection is used for implementation of several surface-based applications (see the publication list below).
 
 ## Overview - Libraries
 * AABB: fast closest triangle access to general mesh
