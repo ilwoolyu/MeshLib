@@ -20,11 +20,10 @@ Mesh Library (MeshLib) - A collection of fundamental surface processing C++ libr
   * Sphere: conformal/area-preserving sphere mapping
 * Geodesic: fast marching solver for static Hamilton-Jacobi PDEs/Eikonal equations (ported from Gabriel Peyré's implementation)
 
-## Author
-* Ilwoo Lyu
-  * 2009-2011: initial version - base mesh class (Department of Computer Science at KAIST)
-  * 2011-2016: extended version - surface utilities (Department of Computer Science at the University of North Carolina at Chapel Hill)
-  * 2017-Present: maintenance - bug fix, optimization, etc. (Electrical Engineering and Computer Science at Vanderbilt University)
+## History
+* 2009-2011: initial version - base mesh class (Department of Computer Science at KAIST)
+* 2011-2016: extended version - surface utilities (Department of Computer Science at the University of North Carolina at Chapel Hill)
+* 2017-Present: maintenance - bug fix, optimization, etc. (Electrical Engineering and Computer Science at Vanderbilt University)
 
 ## Publications
 * Selected publications using this library
