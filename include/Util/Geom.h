@@ -97,8 +97,8 @@ public:
 	static void cart2sph(const float *v, float *phi, float *theta);
 	static void sph2cart(float phi, float theta, float *v);
 	static void sph2cart(double phi, double theta, double *v);
-	static void cart2bary(float *a, float *b, float *c, float *p, float *coeff);
-	static void cart2bary(double *a, double *b, double *c, double *p, double *coeff);
+	static void cart2bary(float *a, float *b, float *c, float *p, float *coeff, float err = 0);
+	static void cart2bary(double *a, double *b, double *c, double *p, double *coeff, double err = 0);
 	static void rotPoint(const float *p0, const float *mat, float *p1);
 	static void rotPoint(const double *p0, const double *mat, double *p1);
 	static void rotPointInv(const float *p0, const float *mat, float *p1);

@@ -2,7 +2,7 @@
 *	AABB_Sphere.h
 *
 *	Release: March 2017
-*	Update: Apr 2017
+*	Update: May 2018
 *
 *	Vanderbilt University
 *	Electrical Engineering and Computer Science
@@ -32,7 +32,10 @@ protected:
 	};
 	node *m_tree;
 	const Mesh *m_mesh;
+	bool *m_visited;
 	float m_maxPhi;
+	int m_pole0, m_pole1;
+	float m_minTheta, m_maxTheta;
 
 public:
 	AABB_Sphere(void);
@@ -40,14 +43,15 @@ public:
 	~AABB_Sphere(void);
 	int closestFace(float *v, float *coeff);
 	void update();
-	void searchTree(const float *p, vector<int> *cand, float eps = 0);
+	void searchTree(const float *p, vector<int> *cand, const float eps1 = 0, const float eps2 = 0);
 
 protected:
 	void initTree(void);
 
 private:
-	int closestFace(float *v, float *coeff, vector<int> &xcand, const float eps);
-	void searchTree(const float phi, const float theta, node *root, vector<int> *cand, float eps = 0);
+	int closestFace(float *v, float *coeff, vector<int> &xcand, const float eps1, const float eps2);
+	int closestFaceBool(float *v, float *coeff, bool *xcand, const float eps1, const float eps2);
+	void searchTree(const float phi, const float theta, node *root, vector<int> *cand, const float eps1 = 0, const float eps2 = 0);
 	void searchTree(const float phi_min, const float theta_min, const float phi_max, const float theta_max, node *root, std::vector<int> *cand, float eps = 0, bool trace = false);
 	node *construction(std::vector<float *> range, std::vector<int> cand);
 	void boundingBox(const Face &f, float *r);

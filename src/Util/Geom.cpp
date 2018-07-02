@@ -456,7 +456,7 @@ void Coordinate::sph2cart(double phi, double theta, double *v)
 	v[1] = coselev * sin(phi);
 }
 
-void Coordinate::cart2bary(float *a, float *b, float *c, float *p, float *coeff)
+void Coordinate::cart2bary(float *a, float *b, float *c, float *p, float *coeff, float err)
 {
 	// test dataset for debug
 	/*float a[3] = {-0.6498,0.3743,0.6616};
@@ -473,14 +473,63 @@ void Coordinate::cart2bary(float *a, float *b, float *c, float *p, float *coeff)
 	N.unit();
 	coeff[0] = (B-P).cross(C-P) * N / ABC;
 	coeff[1] = (C-P).cross(A-P) * N / ABC;
+	//coeff[2] = (A-P).cross(B-P) * N / ABC;
 	coeff[2] = 1 - coeff[0] - coeff[1];
 
+	if (fabs(coeff[0]) < err)
+	{
+		coeff[0] = 0;
+		coeff[1] = 1 - (P - B).norm() / (C - B).norm();
+		coeff[2] = 1 - coeff[1];
+		if (fabs(coeff[1]) < err)
+		{
+			coeff[1] = 0;
+			coeff[2] = 1;
+		}
+		else if (fabs(coeff[2]) < err)
+		{
+			coeff[1] = 1;
+			coeff[2] = 0;
+		}
+	}
+	else if (fabs(coeff[1]) < err)
+	{
+		coeff[1] = 0;
+		coeff[2] = 1 - (P - C).norm() / (A - C).norm();
+		coeff[0] = 1 - coeff[2];
+		if (fabs(coeff[2]) < err)
+		{
+			coeff[2] = 0;
+			coeff[0] = 1;
+		}
+		else if (fabs(coeff[0]) < err)
+		{
+			coeff[2] = 1;
+			coeff[0] = 0;
+		}
+	}
+	else if (fabs(coeff[2]) < err)
+	{
+		coeff[2] = 0;
+		coeff[0] = 1 - (P - A).norm() / (B - A).norm();
+		coeff[1] = 1 - coeff[0];
+		if (fabs(coeff[0]) < err)
+		{
+			coeff[0] = 0;
+			coeff[1] = 1;
+		}
+		else if (fabs(coeff[1]) < err)
+		{
+			coeff[0] = 1;
+			coeff[1] = 0;
+		}
+	}
 	// debug
 	/*printf("coeff: %f %f %f\n",coeff[0],coeff[1],coeff[2]);
 	MathVector PP = A * coeff[0] + B * coeff[1] + C * coeff[2];
 	printf("recons: %f %f %f\n", PP.fv()[0],PP.fv()[1],PP.fv()[2]);*/
 }
-void Coordinate::cart2bary(double *a, double *b, double *c, double *p, double *coeff)
+void Coordinate::cart2bary(double *a, double *b, double *c, double *p, double *coeff, double err)
 {
 	// a counter clockwise order
 	MathVectorD A(a), B(b), C(c), P(p);
@@ -491,6 +540,55 @@ void Coordinate::cart2bary(double *a, double *b, double *c, double *p, double *c
 	coeff[0] = (B-P).cross(C-P) * N / ABC;
 	coeff[1] = (C-P).cross(A-P) * N / ABC;
 	coeff[2] = 1 - coeff[0] - coeff[1];
+	
+	if (fabs(coeff[0]) < err)
+	{
+		coeff[0] = 0;
+		coeff[1] = 1 - (P - B).norm() / (C - B).norm();
+		coeff[2] = 1 - coeff[1];
+		if (fabs(coeff[1]) < err)
+		{
+			coeff[1] = 0;
+			coeff[2] = 1;
+		}
+		else if (fabs(coeff[2]) < err)
+		{
+			coeff[1] = 1;
+			coeff[2] = 0;
+		}
+	}
+	else if (fabs(coeff[1]) < err)
+	{
+		coeff[1] = 0;
+		coeff[2] = 1 - (P - C).norm() / (A - C).norm();
+		coeff[0] = 1 - coeff[2];
+		if (fabs(coeff[2]) < err)
+		{
+			coeff[2] = 0;
+			coeff[0] = 1;
+		}
+		else if (fabs(coeff[0]) < err)
+		{
+			coeff[2] = 1;
+			coeff[0] = 0;
+		}
+	}
+	else if (fabs(coeff[2]) < err)
+	{
+		coeff[2] = 0;
+		coeff[0] = 1 - (P - A).norm() / (B - A).norm();
+		coeff[1] = 1 - coeff[0];
+		if (fabs(coeff[0]) < err)
+		{
+			coeff[0] = 0;
+			coeff[1] = 1;
+		}
+		else if (fabs(coeff[1]) < err)
+		{
+			coeff[0] = 1;
+			coeff[1] = 0;
+		}
+	}
 }
 
 void Coordinate::rotPoint(const float *p0, const float *mat, float *p1)
