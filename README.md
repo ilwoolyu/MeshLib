@@ -27,8 +27,8 @@ Mesh Library (MeshLib) - A collection of fundamental surface processing C++ libr
 
 ## Publications
 * Selected publications using this library
-  * Lyu, I., Kim, S., Girault, J., Gilmore, J., Styner, M., <a href="https://doi.org/10.1016/j.media.2018.06.009">A Cortical Shape-Adaptive Approach to Local Gyrification Index</a>, <i>Medical Image Analysis</i>, In press
   * Lyu, I., Styner, M., Landman, B., Hierarchical Spherical Deformation for Shape Correspondence, <i>Medical Image Computing and Computer Assisted Intervention (MICCAI) 2018</i>, To appear
+  * Lyu, I., Kim, S., Girault, J., Gilmore, J., Styner, M., <a href="https://doi.org/10.1016/j.media.2018.06.009">A Cortical Shape-Adaptive Approach to Local Gyrification Index</a>, <i>Medical Image Analysis</i>, 48, 244-258, 2018
   * Lyu, I., Kim, S., Woodward, N., Styner, M., Landman, B., <a href="http://dx.doi.org/10.1109/TMI.2017.2787589">TRACE: A Topological Graph Representation for Automatic Sulcal Curve Extraction</a>, <i>IEEE Transactions on Medical Imaging</i>, 37(7), 1653-1663, 2018
   * Lyu, I., Kim, S., Bullins, J., Gilmore, J., Styner, M., <a href="http://dx.doi.org/10.1007/978-3-319-66182-7_4">Novel Local Shape-Adaptive Gyrification Index with Application to Brain Development</a>, <i>Medical Image Computing and Computer Assisted Intervention (MICCAI) 2017</i>, LNCS10433, 31-39, 2017
   * Lyu, I., Kim, S., Seong, J., Yoo, S., Evans, A., Shi, Y., Sanchez, M., Niethammer, M., Styner, M., <a href="http://dx.doi.org/10.1007/978-3-642-38868-2_31">Group-wise Cortical Correspondence via Sulcal Curve-constrained Entropy Minimization</a>, <i>Information Processing in Medical Imaging (IPMI) 2013</i>, LNCS7917, 364-375, 2013
