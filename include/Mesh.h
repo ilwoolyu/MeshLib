@@ -2,7 +2,7 @@
 *	Mesh.h
 *
 *	Release: July 2011
-*	Update: April 2015
+*	Update: Sep 2016
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
@@ -15,6 +15,8 @@
 #include <math.h>
 #include <iostream>
 #include <fstream>
+#include <float.h>
+
 //#include <gl/glut.h>
 
 class Vector
@@ -129,10 +131,11 @@ public:
 	void scaling(const float factor);
 	void updateNormal(void);
 	void centering(void);
+	void unit(void);
 	void rotation(const float *axis, float theta);
 	void rotation(const float *axis, float theta, float *v);
-	int nFace(void) const;
-	int nVertex(void) const;
+	const int nFace(void) const;
+	const int nVertex(void) const;
 	const Face **face(void) const;
 	const Face *face(const int index) const;
 	const Vertex **vertex(void) const;

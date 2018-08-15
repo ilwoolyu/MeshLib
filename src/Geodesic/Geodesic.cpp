@@ -12,7 +12,7 @@
 %	'start_points' is a 2 x num_start_points matrix where k is the number of starting points.
 %	'H' is an heuristic (distance that remains to goal). This is a 2D matrix.
 %   
-%   Copyright (c) 2004 Gabriel Peyré
+%   Copyright (c) 2004 Gabriel PeyrÃ©
 *=================================================================*/
 
 /*************************************************
@@ -32,8 +32,8 @@
 #include <map>
 #include <list>
 #include <string>
-#include "Geodesic.h"
 
+#include "Geodesic.h"
 Geodesic::Geodesic(const Mesh *mesh)
 {
 	nverts = -1;
@@ -109,28 +109,28 @@ void Geodesic::setupMesh(const Mesh *mesh)
 	nfaces = mesh->nFace();
 
 	// create the mesh
-	m_Mesh.SetNbrVertex(nverts);
+	GWMesh.SetNbrVertex(nverts);
 	for(int i = 0; i < nverts; ++i)
 	{
-		GW_GeodesicVertex& vert = (GW_GeodesicVertex&)m_Mesh.CreateNewVertex();
+		GW_GeodesicVertex& vert = (GW_GeodesicVertex&) GWMesh.CreateNewVertex();
 		vert.SetPosition(GW_Vector3D((*mesh->vertex(i))[0],(*mesh->vertex(i))[1],(*mesh->vertex(i))[2]));
-		m_Mesh.SetVertex(i, &vert);
+		GWMesh.SetVertex(i, &vert);
 	}
-	m_Mesh.SetNbrFace(nfaces);
+	GWMesh.SetNbrFace(nfaces);
 	for( int i = 0; i < nfaces; ++i)
 	{
-		GW_GeodesicFace& face = (GW_GeodesicFace&)m_Mesh.CreateNewFace();
-		GW_Vertex* v1 = m_Mesh.GetVertex((*mesh->face(i))[0]); GW_ASSERT(v1 != NULL);
-		GW_Vertex* v2 = m_Mesh.GetVertex((*mesh->face(i))[1]); GW_ASSERT(v2 != NULL);
-		GW_Vertex* v3 = m_Mesh.GetVertex((*mesh->face(i))[2]); GW_ASSERT(v3 != NULL);
+		GW_GeodesicFace& face = (GW_GeodesicFace&) GWMesh.CreateNewFace();
+		GW_Vertex* v1 = GWMesh.GetVertex((*mesh->face(i))[0]); GW_ASSERT(v1 != NULL);
+		GW_Vertex* v2 = GWMesh.GetVertex((*mesh->face(i))[1]); GW_ASSERT(v2 != NULL);
+		GW_Vertex* v3 = GWMesh.GetVertex((*mesh->face(i))[2]); GW_ASSERT(v3 != NULL);
 		face.SetVertex( *v1,*v2,*v3 );
-		m_Mesh.SetFace(i, &face);
+		GWMesh.SetFace(i, &face);
 	}
-	m_Mesh.BuildConnectivity();
+	GWMesh.BuildConnectivity();
 	
-	m_Mesh.RegisterWeightCallbackFunction(WeightCallback);
-	m_Mesh.RegisterForceStopCallbackFunction(StopMarchingCallback);
-	m_Mesh.RegisterVertexInsersionCallbackFunction(InsersionCallback);
+	GWMesh.RegisterWeightCallbackFunction(WeightCallback);
+	GWMesh.RegisterForceStopCallbackFunction(StopMarchingCallback);
+	GWMesh.RegisterVertexInsersionCallbackFunction(InsersionCallback);
 	
 	// first ouput : distance
 	if (D != NULL) delete [] D;
@@ -165,15 +165,15 @@ void Geodesic::setupOptions(const double *_Ww, const double *_H, const double *_
 	values = _values;
 
 	if (H != NULL)
-		m_Mesh.RegisterHeuristicToGoalCallbackFunction(HeuristicCallback);
+		GWMesh.RegisterHeuristicToGoalCallbackFunction(HeuristicCallback);
 	else
-		m_Mesh.RegisterHeuristicToGoalCallbackFunction(NULL);
+		GWMesh.RegisterHeuristicToGoalCallbackFunction(NULL);
 	// initialize the distance of the starting points
 	if (values != NULL)
 	{
 		for (int i = 0; i < nstart; ++i)
 		{
-			GW_GeodesicVertex* v = (GW_GeodesicVertex*)m_Mesh.GetVertex((GW_U32)start_points[i]);
+			GW_GeodesicVertex* v = (GW_GeodesicVertex*) GWMesh.GetVertex((GW_U32) start_points[i]);
 			GW_ASSERT(v != NULL);
 			v->SetDistance(values[i]);
 		}
@@ -221,23 +221,23 @@ void Geodesic::perform_front_propagation(const int *_start_points, int _nstart, 
 	dmax = _dmax;
 
 	// set up fast marching
-	m_Mesh.ResetGeodesicMesh();
+	GWMesh.ResetGeodesicMesh();
 	for(int i = 0; i < nstart; ++i)
 	{
-		GW_GeodesicVertex* v = (GW_GeodesicVertex*)m_Mesh.GetVertex((GW_U32)start_points[i]);
+		GW_GeodesicVertex* v = (GW_GeodesicVertex*)GWMesh.GetVertex((GW_U32)start_points[i]);
 		GW_ASSERT(v != NULL);
-		m_Mesh.AddStartVertex(*v);
+		GWMesh.AddStartVertex(*v);
 	}
 		
-	m_Mesh.SetUpFastMarching();
+	GWMesh.SetUpFastMarching();
 	
 	// perform fast marching
-	m_Mesh.PerformFastMarching();
+	GWMesh.PerformFastMarching();
 	
 	// output result
 	for(int i = 0; i < nverts; ++i)
 	{
-		GW_GeodesicVertex* v = (GW_GeodesicVertex*)m_Mesh.GetVertex((GW_U32)i);
+		GW_GeodesicVertex* v = (GW_GeodesicVertex*)GWMesh.GetVertex((GW_U32)i);
 		GW_ASSERT(v != NULL);
 		D[i] = v->GetDistance();
 		S[i] = v->GetState();

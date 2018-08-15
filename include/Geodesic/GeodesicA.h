@@ -92,7 +92,8 @@ private:
 	double area_max;	// max area
 	double area_prop;	// propagation area
 	static GeodesicA *instance;
-	GW_GeodesicMeshA m_Mesh;
+	GW_GeodesicMeshA GWMesh;
+
 };
 
 #endif

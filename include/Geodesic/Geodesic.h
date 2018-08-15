@@ -11,13 +11,13 @@
 *************************************************/
 
 #include <vector>
-#include "Mesh.h"
 
 #ifndef GEODESIC_HH_
 #define GEODESIC_HH_
 
 using std::string;
 
+#include "Mesh.h"
 #include "gw/config.h"
 #include "gw/gw_core/GW_Config.h"
 #include "gw/gw_core/GW_MathsWrapper.h"
@@ -60,7 +60,8 @@ private:
 	int *Q;	// nearest neighbor
 	int nbr_iter;
 	static Geodesic *instance;
-	GW_GeodesicMesh m_Mesh;
+	GW_GeodesicMesh GWMesh;
+
 };
 
 #endif
