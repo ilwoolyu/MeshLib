@@ -6,7 +6,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -270,7 +270,7 @@ void Normal::setNormal(const float *v)
 	m_normal[0] = v[0]; m_normal[1] = v[1]; m_normal[2] = v[2];
 }
 
-const Normal & Normal::operator +=(const Normal &n) 
+const Normal & Normal::operator +=(const Normal &n)
 {
 	m_normal[0] += n.m_normal[0];
 	m_normal[1] += n.m_normal[1];
@@ -279,7 +279,7 @@ const Normal & Normal::operator +=(const Normal &n)
 	return *this;
 }
 
-const Normal & Normal::operator *=(const float s) 
+const Normal & Normal::operator *=(const float s)
 {
 	m_normal[0] *= s;
 	m_normal[1] *= s;
@@ -306,7 +306,7 @@ void Vertex::setList(const int *list, const int n)
 	memcpy(m_list, list, sizeof(int) * n);
 }
 
-const int Vertex::id(void) const
+int Vertex::id(void) const
 {
 	return m_id;
 }
@@ -316,12 +316,12 @@ const int * Vertex::list(void) const
 	return m_list;
 }
 
-const int Vertex::list(const int index) const
+int Vertex::list(const int index) const
 {
 	return m_list[index];
 }
 
-const int Vertex::nNeighbor(void) const
+int Vertex::nNeighbor(void) const
 {
 	return m_nNeighbor;
 }
@@ -367,7 +367,7 @@ const int *Face::list(void) const
 	return (const int *)m_list;
 }
 
-const int Face::list(const int index) const
+int Face::list(const int index) const
 {
 	return (const int)m_list[index];
 }
@@ -392,7 +392,7 @@ const Normal Face::faceNormal(void) const
 	return fn;
 }
 
-const int Face::id(void)
+int Face::id(void)
 {
 	return m_id;
 }
@@ -444,12 +444,12 @@ const Face * Mesh::face(int index) const
 	return (const Face *)m_face[index];
 }
 
-const int Mesh::nFace(void) const
+int Mesh::nFace(void) const
 {
 	return m_nFace;
 }
 
-const int Mesh::nVertex(void) const
+int Mesh::nVertex(void) const
 {
 	return m_nVertex;
 }
@@ -560,20 +560,20 @@ void Mesh::openFile(const char *filename)
 	for (int i = 0; i < m_nNormal; i++) m_normal[i] = new Normal(i);
 	for (int i = 0; i < m_nFace; i++) m_face[i] = new Face(i);
 
-	for (int i = 0; i < m_nVertex; i++) 
+	for (int i = 0; i < m_nVertex; i++)
 	{
 		const float *v = mesh->vertex(i);
 		m_vertex[i]->setVertex(v);
 	}
 	if (mesh->hasNormal())
 	{
-		for (int i = 0; i < m_nNormal; i++) 
+		for (int i = 0; i < m_nNormal; i++)
 		{
 			const float *v = mesh->normal(i);
 			m_normal[i]->setNormal(v);
 		}
 	}
-	for (int i = 0; i < m_nFace; i++) 
+	for (int i = 0; i < m_nFace; i++)
 	{
 		const int *idx = mesh->face(i);
 		const Vertex *v[3];
@@ -599,7 +599,7 @@ void Mesh::openFile(const char *filename)
 			*m_normal[idx[2]] += fn;
 		}
 	}
-	
+
 	for (int i = 0; i < m_nNormal; i++) m_normal[i]->normalize();
 
 	delete mesh;
@@ -610,7 +610,7 @@ void Mesh::openFile(const char *filename)
 void Mesh::updateNormal(void)
 {
 	for (int i = 0; i < m_nNormal; i++) *m_normal[i] = 0;
-	for (int i = 0; i < m_nFace; i++) 
+	for (int i = 0; i < m_nFace; i++)
 	{
 		const int *idx = m_face[i]->list();
 		const Normal *n[3];
@@ -625,7 +625,7 @@ void Mesh::updateNormal(void)
 
 void Mesh::saveFile(const char *filename, const char *format, bool normal)
 {
-	
+
 	if (!strcmp(format, "vtk"))
 	{
 		VtkIO::save(filename, this, normal);
@@ -645,10 +645,10 @@ void Mesh::connectivity(void)
 {
 	int *nNeighbor = new int[m_nVertex];
 	memset(nNeighbor, 0, sizeof(int) * m_nVertex);
-	
-	for (int i = 0; i < m_nFace; i++) 
+
+	for (int i = 0; i < m_nFace; i++)
 	{
-		for (int j = 0; j < 3; j++) 
+		for (int j = 0; j < 3; j++)
 		{
 			int idx = m_face[i]->vertex(j)->id();
 			nNeighbor[idx]++;
@@ -668,7 +668,7 @@ void Mesh::connectivity(void)
 	}
 
 	memset(nNeighbor, 0, sizeof(int) * m_nVertex);
-	for (int i = 0; i < m_nFace; i++) 
+	for (int i = 0; i < m_nFace; i++)
 	{
 		int idx0 = m_face[i]->vertex(0)->id();
 		int idx1 = m_face[i]->vertex(1)->id();
