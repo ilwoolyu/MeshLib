@@ -306,7 +306,7 @@ void Vertex::setList(const int *list, const int n)
 	memcpy(m_list, list, sizeof(int) * n);
 }
 
-const int Vertex::id(void) const
+int Vertex::id(void) const
 {
 	return m_id;
 }
@@ -316,12 +316,12 @@ const int * Vertex::list(void) const
 	return m_list;
 }
 
-const int Vertex::list(const int index) const
+int Vertex::list(const int index) const
 {
 	return m_list[index];
 }
 
-const int Vertex::nNeighbor(void) const
+int Vertex::nNeighbor(void) const
 {
 	return m_nNeighbor;
 }
@@ -367,7 +367,7 @@ const int *Face::list(void) const
 	return (const int *)m_list;
 }
 
-const int Face::list(const int index) const
+int Face::list(const int index) const
 {
 	return (const int)m_list[index];
 }
@@ -392,7 +392,7 @@ const Normal Face::faceNormal(void) const
 	return fn;
 }
 
-const int Face::id(void)
+int Face::id(void)
 {
 	return m_id;
 }
@@ -444,12 +444,12 @@ const Face * Mesh::face(int index) const
 	return (const Face *)m_face[index];
 }
 
-const int Mesh::nFace(void) const
+int Mesh::nFace(void) const
 {
 	return m_nFace;
 }
 
-const int Mesh::nVertex(void) const
+int Mesh::nVertex(void) const
 {
 	return m_nVertex;
 }
