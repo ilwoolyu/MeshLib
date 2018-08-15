@@ -23,12 +23,26 @@ ENDMACRO()
 HEADER_DIRECTORIES(HEADER_DIR)
 include_directories(${HEADER_DIR})
 
-set(SRC_FILES src/Mesh.cpp src/MeshIO.cpp src/MNIObjIO.cpp src/VtkIO.cpp)
-set(SRC_UTIL_FILES src/Util/Geom.cpp src/Util/AABB.cpp src/Util/AABB_Sphere.cpp src/Util/Slicer.cpp src/Util/SphericalHarmonics.cpp src/Util/SurfaceUtil.cpp)
+set(SRC_FILES
+  src/Mesh.cpp
+  src/MeshIO.cpp
+  src/MNIObjIO.cpp
+  src/VtkIO.cpp
+  )
+set(SRC_UTIL_FILES
+  src/Util/Geom.cpp
+  src/Util/AABB.cpp
+  src/Util/AABB_Sphere.cpp
+  src/Util/Slicer.cpp
+  src/Util/SphericalHarmonics.cpp
+  src/Util/SurfaceUtil.cpp
+  )
 
 # External libraries
 # geodesic distance
-set(SRC_GEOD_FILES src/Geodesic/Geodesic.cpp src/Geodesic/GeodesicA.cpp
+set(SRC_GEOD_FILES
+	src/Geodesic/Geodesic.cpp
+	src/Geodesic/GeodesicA.cpp
 	src/Geodesic/GeodesicPath.cpp
 	src/Geodesic/gw/gw_core/GW_Config.cpp
 	src/Geodesic/gw/gw_core/GW_FaceIterator.cpp
@@ -45,7 +59,8 @@ set(SRC_GEOD_FILES src/Geodesic/Geodesic.cpp src/Geodesic/GeodesicA.cpp
 	src/Geodesic/gw/gw_geodesic/GW_TriangularInterpolation_Cubic.cpp
 	src/Geodesic/gw/gw_geodesic/GW_GeodesicVertex.cpp
 	src/Geodesic/gw/gw_geodesic/GW_TriangularInterpolation_Linear.cpp
-	src/Geodesic/gw/gw_geodesic/GW_TriangularInterpolation_Quadratic.cpp)
+	src/Geodesic/gw/gw_geodesic/GW_TriangularInterpolation_Quadratic.cpp
+  )
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
