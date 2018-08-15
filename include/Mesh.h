@@ -6,7 +6,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -65,9 +65,9 @@ public:
 	void setList(const int *list, const int n);
 	float operator[] (const int id) const;
 	const int *list(void) const;
-	const int list(const int index) const;
-	const int id(void) const;
-	const int nNeighbor(void) const;
+	int list(const int index) const;
+	int id(void) const;
+	int nNeighbor(void) const;
 	const float *fv(void) const;
 
 private:
@@ -105,9 +105,9 @@ public:
 	void setVertex(const Vertex **v);
 	void setNormal(const Normal **v);
 	void setList(const int *list);
-	const int id(void);
+	int id(void);
 	const int *list(void) const;
-	const int list(const int index) const;
+	int list(const int index) const;
 	const Vertex *vertex(const int index) const;
 	const Normal *normal(const int index) const;
 	const Normal faceNormal(void) const;
@@ -145,7 +145,7 @@ public:
 
 private:
 	void connectivity(void);
-	
+
 private:
 	int m_nVertex;
 	int m_nFace;

@@ -12,7 +12,7 @@
 %	'start_points' is a 2 x num_start_points matrix where k is the number of starting points.
 %	'H' is an heuristic (distance that remains to goal). This is a 2D matrix.
 %   
-%   Copyright (c) 2004 Gabriel Peyré
+%   Copyright (c) 2004 Gabriel PeyrÃ©
 *=================================================================*/
 
 /*************************************************
@@ -192,7 +192,7 @@ void GeodesicA::setupMesh(const Mesh *mesh)
 	varea = new double[mesh->nVertex()];
 	for (int i = 0; i < mesh->nVertex(); i++)
 		varea[i] = vertexArea(mesh, i);
-	
+
 	// arg1 : vertex
 	nverts = mesh->nVertex();
 	// arg2 : faces

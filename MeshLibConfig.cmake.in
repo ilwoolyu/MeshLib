@@ -1,19 +1,8 @@
-# - Config file for the FADTTS package
-# It defines the following variables
+@PACKAGE_INIT@
 
-# Compute paths
+set_and_check(MeshLib_TARGETS "${CMAKE_CURRENT_LIST_DIR}/MeshLibTargets.cmake")
 
-get_filename_component(Mesh_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-
-
-file(TO_CMAKE_PATH "${Mesh_CMAKE_DIR}/../../../include" Mesh_INCLUDE_DIRS)
-file(TO_CMAKE_PATH "${Mesh_CMAKE_DIR}/../../" Mesh_LIBRARY_DIRS)
-
-include_directories(${Mesh_INCLUDE_DIRS})
-link_directories(${Mesh_LIBRARY_DIRS})
-
-set(Mesh_LIBRARIES Mesh)
-
-message(STATUS "\t Mesh_INCLUDE_DIRS=" ${Mesh_INCLUDE_DIRS})
-message(STATUS "\t Mesh_LIBRARIES=" ${Mesh_LIBRARIES})
-message(STATUS "\t Mesh_LIBRARY_DIRS=" ${Mesh_LIBRARY_DIRS})
+if(NOT MeshLib_TARGETS_IMPORTED)
+  set(MeshLib_TARGETS_IMPORTED 1)
+  include(${MeshLib_TARGETS})
+endif()

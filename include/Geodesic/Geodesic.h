@@ -61,6 +61,7 @@ private:
 	int nbr_iter;
 	static Geodesic *instance;
 	GW_GeodesicMesh GWMesh;
+
 };
 
 #endif
