@@ -6,7 +6,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -142,7 +142,7 @@ public:
 
 private:
 	void connectivity(void);
-	
+
 private:
 	int m_nVertex;
 	int m_nFace;
