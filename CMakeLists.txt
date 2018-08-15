@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 11)
+
 project(MeshLib VERSION "1.0.0")
 
 # Set a default build type if none was specified
