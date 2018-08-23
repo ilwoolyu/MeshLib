@@ -14,6 +14,10 @@
 #include <algorithm>
 #include "MeshIO.h"
 
+#if defined(_WIN32) || defined(_WIN64) 
+#define strcasecmp _stricmp 
+#endif
+
 using namespace std;
 
 class VtkIO: public MeshIO
