@@ -65,9 +65,9 @@ public:
 	void setList(const int *list, const int n);
 	float operator[] (const int id) const;
 	const int *list(void) const;
-	const int list(const int index) const;
-	const int id(void) const;
-	const int nNeighbor(void) const;
+	int list(const int index) const;
+	int id(void) const;
+	int nNeighbor(void) const;
 	const float *fv(void) const;
 
 private:
@@ -105,9 +105,9 @@ public:
 	void setVertex(const Vertex **v);
 	void setNormal(const Normal **v);
 	void setList(const int *list);
-	const int id(void);
+	int id(void);
 	const int *list(void) const;
-	const int list(const int index) const;
+	int list(const int index) const;
 	const Vertex *vertex(const int index) const;
 	const Normal *normal(const int index) const;
 	const Normal faceNormal(void) const;
@@ -135,8 +135,8 @@ public:
 	void rotation(const float *axis, float theta);
 	void rotation(const float *axis, float theta, float *v);
 	void setMesh(const float *vertex, const int *face, const float *normal, int nVertex, int nFace, int nNormal, bool hasNormal);
-	const int nFace(void) const;
-	const int nVertex(void) const;
+	int nFace(void) const;
+	int nVertex(void) const;
 	const Face **face(void) const;
 	const Face *face(const int index) const;
 	const Vertex **vertex(void) const;
