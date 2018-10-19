@@ -75,6 +75,10 @@ const float * GeodesicPath::getPoint(int id)
 {
 	return m_path[id];
 }
+const float * GeodesicPath::getBarycentricPoint(int id)
+{
+	return m_bary_path[id];
+}
 int GeodesicPath::size(void)
 {
 	return m_path.size();
@@ -91,6 +95,9 @@ void GeodesicPath::computeGeodesicPath(int x)
 	p[1] = m_mesh->vertex(x)->fv()[1];
 	p[2] = m_mesh->vertex(x)->fv()[2];
 	m_path.push_back(p);
+	float *p2 = new float[3];
+	p2[0] = (float)x; p2[1] = p2[0]; p2[2] = 1;
+	m_bary_path.push_back(p2);
 	double Dprev = m_dist[x];
 
 	while (true)
@@ -147,6 +154,13 @@ void GeodesicPath::computeGeodesicPath(int x)
 		q[1] = p.fv()[1];
 		q[2] = p.fv()[2];
 		m_path.push_back(q);
+		
+		float *r = new float[3];
+		r[0] = (float)m_vlist[n].vid1;
+		r[1] = (float)m_vlist[n].vid2;
+		r[2] = (float)m_plist[n];
+		m_bary_path.push_back(r);
+
 		if (Dnew == 0 || (Dprev == Dnew && n > 0)) break;
 		
 		Dprev = Dnew;
@@ -171,6 +185,10 @@ void GeodesicPath::clear(void)
 	for (int i = 0; i < m_path.size(); i++)
 		delete [] m_path[i];
 	m_path.clear();
+
+	for (int i = 0; i < m_bary_path.size(); i++)
+		delete [] m_bary_path[i];
+	m_bary_path.clear();
 }
 int GeodesicPath::get_face_face(int f, int v, int w)
 {

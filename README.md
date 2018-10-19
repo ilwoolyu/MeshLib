@@ -27,7 +27,7 @@ Mesh Library (MeshLib) - A collection of fundamental surface processing C++ libr
 
 ## Publications
 * Selected publications using this library
-  * Lyu, I., Styner, M., Landman, B., Hierarchical Spherical Deformation for Shape Correspondence, <i>Medical Image Computing and Computer Assisted Intervention (MICCAI) 2018</i>, To appear
+  * Lyu, I., Styner, M., Landman, B., <a href="https://doi.org/10.1007/978-3-030-00928-1_96">Hierarchical Spherical Deformation for Shape Correspondence</a>, <i>Medical Image Computing and Computer Assisted Intervention (MICCAI) 2018</i>, LNCS11070, 853-861, 2018
   * Lyu, I., Kim, S., Girault, J., Gilmore, J., Styner, M., <a href="https://doi.org/10.1016/j.media.2018.06.009">A Cortical Shape-Adaptive Approach to Local Gyrification Index</a>, <i>Medical Image Analysis</i>, 48, 244-258, 2018
   * Lyu, I., Kim, S., Woodward, N., Styner, M., Landman, B., <a href="http://dx.doi.org/10.1109/TMI.2017.2787589">TRACE: A Topological Graph Representation for Automatic Sulcal Curve Extraction</a>, <i>IEEE Transactions on Medical Imaging</i>, 37(7), 1653-1663, 2018
   * Lyu, I., Kim, S., Bullins, J., Gilmore, J., Styner, M., <a href="http://dx.doi.org/10.1007/978-3-319-66182-7_4">Novel Local Shape-Adaptive Gyrification Index with Application to Brain Development</a>, <i>Medical Image Computing and Computer Assisted Intervention (MICCAI) 2017</i>, LNCS10433, 31-39, 2017

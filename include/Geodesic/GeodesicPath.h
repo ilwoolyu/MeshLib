@@ -48,6 +48,7 @@ protected:
 	vector<Edge> m_vlist;
 	vector<double> m_plist;
 	vector<float *> m_path;
+	vector<float *> m_bary_path;
 	const Mesh *m_mesh;
 	const double *m_dist;
 
@@ -56,6 +57,7 @@ public:
 	GeodesicPath(const double *dist, const Mesh *mesh);
 	~GeodesicPath(void);
 	const float *getPoint(int id);
+	const float *getBarycentricPoint(int id);
 	int size(void);
 	void computeGeodesicPath(int x);
 private:
