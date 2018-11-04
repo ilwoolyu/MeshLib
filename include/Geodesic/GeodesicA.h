@@ -11,13 +11,14 @@
 *************************************************/
 
 #include <vector>
-#include "Mesh.h"
+#include <functional>
 
 #ifndef GEODESICA_HH_
 #define GEODESICA_HH_
 
 using std::string;
 
+#include "Mesh.h"
 #include "gw/config.h"
 #include "gw/gw_core/GW_Config.h"
 #include "gw/gw_core/GW_MathsWrapper.h"
@@ -46,16 +47,14 @@ public:
 	int niter(void);
 	
 private:
-	static void setInstance(GeodesicA *_instance);
+	const double * V1Callback(GW_GeodesicVertex& Vert1);
+	double Lam1Callback(GW_GeodesicVertex& Vert1);
+	double Lam2Callback(GW_GeodesicVertex& Vert1);
 	
-	static const double * V1Callback(GW_GeodesicVertex& Vert1);
-	static double Lam1Callback(GW_GeodesicVertex& Vert1);
-	static double Lam2Callback(GW_GeodesicVertex& Vert1);
-	
-	static GW_Float WeightCallback(GW_GeodesicVertex& Vert1, GW_Vector3D& Vert2);
-	static GW_Bool StopMarchingCallback(GW_GeodesicVertex& Vert);
-	static GW_Bool InsersionCallback(GW_GeodesicVertex& Vert, GW_Float rNewDist);
-	static GW_Float HeuristicCallback(GW_GeodesicVertex& Vert);
+	GW_Float WeightCallback(GW_GeodesicVertex& Vert1, GW_Vector3D& Vert2);
+	GW_Bool StopMarchingCallback(GW_GeodesicVertex& Vert);
+	GW_Bool InsersionCallback(GW_GeodesicVertex& Vert, GW_Float rNewDist);
+	GW_Float HeuristicCallback(GW_GeodesicVertex& Vert);
 	void setupCurvature(const Mesh *mesh);
 	void setupCurvatureTensor(void);
 	double vertexArea(const Mesh *mesh, int id);
@@ -91,7 +90,6 @@ private:
 	int nbr_iter;
 	double area_max;	// max area
 	double area_prop;	// propagation area
-	static GeodesicA *instance;
 	GW_GeodesicMeshA GWMesh;
 };
 

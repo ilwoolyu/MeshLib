@@ -11,6 +11,7 @@
 *************************************************/
 
 #include <vector>
+#include <functional>
 
 #ifndef GEODESIC_HH_
 #define GEODESIC_HH_
@@ -40,11 +41,10 @@ public:
 	const int *source(void);
 	
 private:
-	static void setInstance(Geodesic *_instance);
-	static GW_Float WeightCallback(GW_GeodesicVertex& Vert);
-	static GW_Bool StopMarchingCallback(GW_GeodesicVertex& Vert);
-	static GW_Bool InsersionCallback(GW_GeodesicVertex& Vert, GW_Float rNewDist);
-	static GW_Float HeuristicCallback(GW_GeodesicVertex& Vert);
+	GW_Float WeightCallback(GW_GeodesicVertex& Vert);
+	GW_Bool StopMarchingCallback(GW_GeodesicVertex& Vert);
+	GW_Bool InsersionCallback(GW_GeodesicVertex& Vert, GW_Float rNewDist);
+	GW_Float HeuristicCallback(GW_GeodesicVertex& Vert);
 
 private:
 	int nverts; 
@@ -59,7 +59,6 @@ private:
 	int *S;	// state
 	int *Q;	// nearest neighbor
 	int nbr_iter;
-	static Geodesic *instance;
 	GW_GeodesicMesh GWMesh;
 };
 

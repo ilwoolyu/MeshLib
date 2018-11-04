@@ -11,6 +11,7 @@
 #ifndef _GW_GEODESICMESHA_H_
 #define _GW_GEODESICMESHA_H_
 
+#include <functional>
 #include "../gw_core/GW_Config.h"
 #include "../gw_core/GW_Mesh.h"
 #include "../gw_core/GW_Face.h"
@@ -74,24 +75,33 @@ public:
     /** \name Callback management. */
     //-------------------------------------------------------------------------
     //@{
-    typedef const double * (*T_V1CallbackFunction)( GW_GeodesicVertex& Vert );
+	//typedef const double * (*T_V1CallbackFunction)( GW_GeodesicVertex& Vert );
+	typedef std::function<const double * ( GW_GeodesicVertex& Vert )> T_V1CallbackFunction;
 	void RegisterV1CallbackFunction( T_V1CallbackFunction pFunc );
-    typedef const double * (*T_V2CallbackFunction)( GW_GeodesicVertex& Vert );
+	//typedef const double * (*T_V2CallbackFunction)( GW_GeodesicVertex& Vert );
+	typedef std::function<const double * ( GW_GeodesicVertex& Vert )> T_V2CallbackFunction;
 	void RegisterV2CallbackFunction( T_V2CallbackFunction pFunc );
-    typedef double (*T_Lam1CallbackFunction)( GW_GeodesicVertex& Vert );
+	//typedef double (*T_Lam1CallbackFunction)( GW_GeodesicVertex& Vert );
+	typedef std::function<double ( GW_GeodesicVertex& Vert )> T_Lam1CallbackFunction;
 	void RegisterLam1CallbackFunction( T_Lam1CallbackFunction pFunc );
-    typedef double (*T_Lam2CallbackFunction)( GW_GeodesicVertex& Vert );
+	//typedef double (*T_Lam2CallbackFunction)( GW_GeodesicVertex& Vert );
+	typedef std::function<double ( GW_GeodesicVertex& Vert )> T_Lam2CallbackFunction;
 	void RegisterLam2CallbackFunction( T_Lam2CallbackFunction pFunc );
 	
-	typedef GW_Float (*T_WeightCallbackFunction)( GW_GeodesicVertex& Vert1, GW_Vector3D& Vert2 );
+	//typedef GW_Float (*T_WeightCallbackFunction)( GW_GeodesicVertex& Vert1, GW_Vector3D& Vert2 );
+	typedef std::function<GW_Float ( GW_GeodesicVertex& Vert1, GW_Vector3D& Vert2 )> T_WeightCallbackFunction;
 	void RegisterWeightCallbackFunction( T_WeightCallbackFunction pFunc );
-	typedef GW_Bool (*T_FastMarchingCallbackFunction)( GW_GeodesicVertex& Vert );
+	//typedef GW_Bool (*T_FastMarchingCallbackFunction)( GW_GeodesicVertex& Vert );
+	typedef std::function<GW_Bool ( GW_GeodesicVertex& Vert )> T_FastMarchingCallbackFunction;
 	void RegisterForceStopCallbackFunction( T_FastMarchingCallbackFunction pFunc );
-	typedef void (*T_NewDeadVertexCallbackFunction)( GW_GeodesicVertex& Vert );
+	//typedef void (*T_NewDeadVertexCallbackFunction)( GW_GeodesicVertex& Vert );
+	typedef std::function<void ( GW_GeodesicVertex& Vert )> T_NewDeadVertexCallbackFunction;
 	void RegisterNewDeadVertexCallbackFunction( T_NewDeadVertexCallbackFunction pFunc );
-	typedef GW_Bool (*T_VertexInsersionCallbackFunction)( GW_GeodesicVertex& Vert, GW_Float rNewDist );
+	//typedef GW_Bool (*T_VertexInsersionCallbackFunction)( GW_GeodesicVertex& Vert, GW_Float rNewDist );
+	typedef std::function<GW_Bool ( GW_GeodesicVertex& Vert, GW_Float rNewDist )> T_VertexInsersionCallbackFunction;
 	void RegisterVertexInsersionCallbackFunction( T_VertexInsersionCallbackFunction pFunc );
-	typedef GW_Float (*T_HeuristicToGoalCallbackFunction)( GW_GeodesicVertex& Vert );
+	//typedef GW_Float (*T_HeuristicToGoalCallbackFunction)( GW_GeodesicVertex& Vert );
+	typedef std::function<GW_Float ( GW_GeodesicVertex& Vert )> T_HeuristicToGoalCallbackFunction;
 	void RegisterHeuristicToGoalCallbackFunction( T_HeuristicToGoalCallbackFunction pFunc );
 	//@}
 

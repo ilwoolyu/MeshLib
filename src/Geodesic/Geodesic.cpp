@@ -45,9 +45,6 @@ Geodesic::Geodesic(const Mesh *mesh)
 	Q = NULL;	// nearest neighbor
 	
 	if (mesh != NULL) setupMesh(mesh);
-	
-	// for callback functions
-	setInstance(this);
 }
 
 Geodesic::~Geodesic(void)
@@ -59,16 +56,10 @@ Geodesic::~Geodesic(void)
 	if (Q != NULL) delete [] Q;
 }
 
-Geodesic *Geodesic::instance = 0;
-void Geodesic::setInstance(Geodesic *_instance)
-{
-	instance = _instance;
-}
-
 GW_Float Geodesic::WeightCallback(GW_GeodesicVertex& Vert)
 {
 	GW_U32 i = Vert.GetID();
-	return instance->Ww[i];
+	return Ww[i];
 }
 
 GW_Bool Geodesic::StopMarchingCallback( GW_GeodesicVertex& Vert )
@@ -77,10 +68,10 @@ GW_Bool Geodesic::StopMarchingCallback( GW_GeodesicVertex& Vert )
 	GW_U32 i = Vert.GetID();
 //	display_message("ind %d",i );
 //	display_message("dist %f",Vert.GetDistance() );
-	if( Vert.GetDistance() > instance->dmax )
+	if( Vert.GetDistance() > dmax )
 		return true;
-	for( int k=0; k<instance->nend; ++k )
-		if( instance->end_points[k]==i )
+	for( int k=0; k<nend; ++k )
+		if( end_points[k]==i )
 			return true;
 	return false;
 }
@@ -89,17 +80,17 @@ GW_Bool Geodesic::InsersionCallback( GW_GeodesicVertex& Vert, GW_Float rNewDist 
 {
 	// check if the distance of the new point is less than the given distance
 	GW_U32 i = Vert.GetID();
-	bool doinsersion = instance->nbr_iter <= instance->niter_max;
-	if( instance->L!=NULL )
-		doinsersion = doinsersion && (rNewDist<instance->L[i]);
-	instance->nbr_iter++;
+	bool doinsersion = nbr_iter <= niter_max;
+	if( L!=NULL )
+		doinsersion = doinsersion && (rNewDist<L[i]);
+	nbr_iter++;
 	return doinsersion;
 }
 GW_Float Geodesic::HeuristicCallback( GW_GeodesicVertex& Vert )
 {
 	// return the heuristic distance
 	GW_U32 i = Vert.GetID();
-	return instance->H[i];
+	return H[i];
 }
 
 void Geodesic::setupMesh(const Mesh *mesh)
@@ -129,9 +120,9 @@ void Geodesic::setupMesh(const Mesh *mesh)
 	}
 	GWMesh.BuildConnectivity();
 	
-	GWMesh.RegisterWeightCallbackFunction(WeightCallback);
-	GWMesh.RegisterForceStopCallbackFunction(StopMarchingCallback);
-	GWMesh.RegisterVertexInsersionCallbackFunction(InsersionCallback);
+	GWMesh.RegisterWeightCallbackFunction(std::bind(&Geodesic::WeightCallback, this, std::placeholders::_1));
+	GWMesh.RegisterForceStopCallbackFunction(std::bind(&Geodesic::StopMarchingCallback, this, std::placeholders::_1));
+	GWMesh.RegisterVertexInsersionCallbackFunction(std::bind(&Geodesic::InsersionCallback, this, std::placeholders::_1, std::placeholders::_2));
 	
 	// first ouput : distance
 	if (D != NULL) delete [] D;
@@ -166,7 +157,7 @@ void Geodesic::setupOptions(const double *_Ww, const double *_H, const double *_
 	values = _values;
 
 	if (H != NULL)
-		GWMesh.RegisterHeuristicToGoalCallbackFunction(HeuristicCallback);
+		GWMesh.RegisterHeuristicToGoalCallbackFunction(std::bind(&Geodesic::HeuristicCallback, this, std::placeholders::_1));
 	else
 		GWMesh.RegisterHeuristicToGoalCallbackFunction(NULL);
 	// initialize the distance of the starting points

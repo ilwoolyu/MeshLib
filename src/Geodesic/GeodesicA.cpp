@@ -56,9 +56,6 @@ GeodesicA::GeodesicA(const Mesh *mesh)
 	varea = NULL;
 	
 	if (mesh != NULL) setupMesh(mesh);
-	
-	// for callback functions
-	setInstance(this);
 }
 
 GeodesicA::~GeodesicA(void)
@@ -77,28 +74,22 @@ GeodesicA::~GeodesicA(void)
 	if (A != NULL) delete [] A;
 }
 
-GeodesicA *GeodesicA::instance = 0;
-void GeodesicA::setInstance(GeodesicA *_instance)
-{
-	instance = _instance;
-}
-
 const double * GeodesicA::V1Callback(GW_GeodesicVertex& Vert1)
 {
 	GW_U32 i = Vert1.GetID();
-	return instance->V1[i];
+	return V1[i];
 }
 
 double GeodesicA::Lam1Callback(GW_GeodesicVertex& Vert1)
 {
 	GW_U32 i = Vert1.GetID();
-	return instance->Lam1[i];
+	return Lam1[i];
 }
 
 double GeodesicA::Lam2Callback(GW_GeodesicVertex& Vert1)
 {
 	GW_U32 i = Vert1.GetID();
-	return instance->Lam2[i];
+	return Lam2[i];
 }
 
 GW_Float GeodesicA::WeightCallback(GW_GeodesicVertex& Vert1, GW_Vector3D& Vert2)
@@ -111,7 +102,7 @@ GW_Float GeodesicA::WeightCallback(GW_GeodesicVertex& Vert1, GW_Vector3D& Vert2)
 	E -= N * p;
 	E /= E.Norm();
 	
-	const double **T = (const double **) instance->T;
+	const double **T = (const double **) T;
 	GW_Float speed = E[0] * (T[i][0] * E[0] + T[i][1] * E[1] + T[i][2] * E[2]) +
 					E[1] * (T[i][3] * E[0] + T[i][4] * E[1] + T[i][5] * E[2]) +
 					E[2] * (T[i][6] * E[0] + T[i][7] * E[1] + T[i][8] * E[2]);
@@ -137,20 +128,20 @@ GW_Bool GeodesicA::StopMarchingCallback( GW_GeodesicVertex& Vert )
 	GW_U32 i = Vert.GetID();
 	//printf("ind %d\n",i );
 	//printf("dist %f\n",Vert.GetDistance() );
-	if( Vert.GetDistance() > instance->dmax )
+	if( Vert.GetDistance() > dmax )
 		return true;
-	if (instance->nbr_iter >= instance->niter_max)
+	if (nbr_iter >= niter_max)
 		return true;
-	if (instance->area_max > 0)
+	if (area_max > 0)
 	{
-		instance->area_prop += instance->varea[i];
-		instance->A[i] = instance->area_prop;
-		if (instance->area_prop > instance->area_max)
+		area_prop += varea[i];
+		A[i] = area_prop;
+		if (area_prop > area_max)
 			return true;
 	}
 	
-	for( int k=0; k<instance->nend; ++k )
-		if( instance->end_points[k]==i )
+	for( int k=0; k<nend; ++k )
+		if( end_points[k]==i )
 			return true;
 	return false;
 }
@@ -159,12 +150,12 @@ GW_Bool GeodesicA::InsersionCallback( GW_GeodesicVertex& Vert, GW_Float rNewDist
 {
 	// check if the distance of the new point is less than the given distance
 	GW_U32 i = Vert.GetID();
-	bool doinsersion = instance->nbr_iter <= instance->niter_max;
-	if( instance->L!=NULL )
-		doinsersion = doinsersion && (rNewDist<instance->L[i]);
-	if ( instance->exc != NULL)
-		doinsersion = doinsersion && !instance->exc[i];
-	instance->nbr_iter++;
+	bool doinsersion = nbr_iter <= niter_max;
+	if( L!=NULL )
+		doinsersion = doinsersion && (rNewDist<L[i]);
+	if ( exc != NULL)
+		doinsersion = doinsersion && !exc[i];
+	nbr_iter++;
 	return doinsersion;
 }
 
@@ -172,7 +163,7 @@ GW_Float GeodesicA::HeuristicCallback( GW_GeodesicVertex& Vert )
 {
 	// return the heuristic distance
 	GW_U32 i = Vert.GetID();
-	return instance->H[i];
+	return H[i];
 }
 
 void GeodesicA::setupCurvature(const Mesh *mesh)
@@ -241,13 +232,13 @@ void GeodesicA::setupMesh(const Mesh *mesh)
 	Lam2 = new double[nverts];
 	for (int i = 0; i < nverts; i++) V1[i] = &V1_[i * 3];
 
-	GWMesh.RegisterV1CallbackFunction(V1Callback);
-	GWMesh.RegisterLam1CallbackFunction(Lam1Callback);
-	GWMesh.RegisterLam2CallbackFunction(Lam2Callback);
+	GWMesh.RegisterV1CallbackFunction(std::bind(&GeodesicA::V1Callback, this, std::placeholders::_1));
+	GWMesh.RegisterLam1CallbackFunction(std::bind(&GeodesicA::Lam1Callback, this, std::placeholders::_1));
+	GWMesh.RegisterLam2CallbackFunction(std::bind(&GeodesicA::Lam2Callback, this, std::placeholders::_1));
 	
-	GWMesh.RegisterWeightCallbackFunction(WeightCallback);
-	GWMesh.RegisterForceStopCallbackFunction(StopMarchingCallback);
-	GWMesh.RegisterVertexInsersionCallbackFunction(InsersionCallback);
+	GWMesh.RegisterWeightCallbackFunction(std::bind(&GeodesicA::WeightCallback, this, std::placeholders::_1, std::placeholders::_2));
+	GWMesh.RegisterForceStopCallbackFunction(std::bind(&GeodesicA::StopMarchingCallback, this, std::placeholders::_1));
+	GWMesh.RegisterVertexInsersionCallbackFunction(std::bind(&GeodesicA::InsersionCallback, this, std::placeholders::_1, std::placeholders::_2));
 	
 	setupCurvatureTensor();
 
@@ -453,7 +444,7 @@ void GeodesicA::setupOptions(const double *_Ww, const double *_H, const double *
 	values = _values;
 
 	if (H != NULL)
-		GWMesh.RegisterHeuristicToGoalCallbackFunction(HeuristicCallback);
+		GWMesh.RegisterHeuristicToGoalCallbackFunction(std::bind(&GeodesicA::HeuristicCallback, this, std::placeholders::_1));
 	else
 		GWMesh.RegisterHeuristicToGoalCallbackFunction(NULL);
 	// initialize the distance of the starting points
