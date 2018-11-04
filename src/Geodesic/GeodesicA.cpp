@@ -102,7 +102,6 @@ GW_Float GeodesicA::WeightCallback(GW_GeodesicVertex& Vert1, GW_Vector3D& Vert2)
 	E -= N * p;
 	E /= E.Norm();
 	
-	const double **T = (const double **) T;
 	GW_Float speed = E[0] * (T[i][0] * E[0] + T[i][1] * E[1] + T[i][2] * E[2]) +
 					E[1] * (T[i][3] * E[0] + T[i][4] * E[1] + T[i][5] * E[2]) +
 					E[2] * (T[i][6] * E[0] + T[i][7] * E[1] + T[i][8] * E[2]);
