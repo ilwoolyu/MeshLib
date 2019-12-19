@@ -129,6 +129,158 @@ void SurfaceUtil::curvature(const Mesh *mesh, float *cmin, float *cmax, float **
 	delete [] work_max;
 }
 
+void SurfaceUtil::curvature_quad(const Mesh *mesh, double *cmin, double *cmax, double **umin, double **umax)
+{
+	const int n = mesh->nVertex();
+
+	double *work_min, *work_max;
+	bool minNull = (umin == NULL), maxNull = (umax == NULL);
+	if (minNull)
+	{
+		umin = new double*[n];
+		work_min = new double[n * 3];
+		for (int i = 0; i < n; i++)
+			umin[i] = &work_min[i * 3];
+	}
+	if (maxNull)
+	{
+		umax = new double*[n];
+		work_max = new double[n * 3];
+		for (int i = 0; i < n; i++)
+			umax[i] = &work_max[i * 3];
+	}
+
+	std::vector<int> neighbor;	// neighbors
+	for (int i = 0; i < mesh->nVertex(); i++)
+	{
+		neighbor.clear();
+		for (int n1 = 0; n1 < mesh->vertex(i)->nNeighbor(); n1++)
+		{
+			neighbor.push_back(mesh->vertex(i)->list(n1));
+			int id = mesh->vertex(i)->list(n1);
+			for (int n2 = 0; n2 < mesh->vertex(id)->nNeighbor(); n2++)
+			{
+				neighbor.push_back(mesh->vertex(id)->list(n2));
+			}
+		}
+		sort(neighbor.begin(), neighbor.end());
+		neighbor.erase(unique(neighbor.begin(), neighbor.end()), neighbor.end());
+		double axis[3] = {-1, 0, 0};
+		Vector Ax(axis), B(mesh->normal(i)->fv());
+		Vector Rx = B.cross(Ax);
+		double mat[9] = {1, 0, 0, 0, 1, 0, 0, 0, 1};
+		if (Ax.norm() > 0)
+		{
+			Ax.unit();
+			double theta = acos(B.fv()[0] * axis[0]);
+			double ax[3] = {Rx.fv()[0], Rx.fv()[1], Rx.fv()[2]};
+			Coordinate::rotation(ax, theta, mat);
+		}
+
+		double *M = new double[neighbor.size() * 6];
+		double **A = new double*[neighbor.size()];
+		double *b = new double[neighbor.size()];
+		double x[6];
+		double v1[3];
+		// quadartic fit
+		for (int j = 0; j < neighbor.size(); j++)
+		{
+			A[j] = &M[j * 6];
+			double v0[3] = {mesh->vertex(neighbor[j])->fv()[0], mesh->vertex(neighbor[j])->fv()[1], mesh->vertex(neighbor[j])->fv()[2]};
+			Coordinate::rotPoint(v0, mat, v1);
+			A[j][0] = v1[1] * v1[1];
+			A[j][1] = v1[2] * v1[2];
+			A[j][2] = v1[1] * v1[2];
+			A[j][3] = v1[1];
+			A[j][4] = v1[2];
+			A[j][5] = 1;
+			b[j] = v1[0];
+		}
+		LinearAlgebra::Ab((const double **)A, neighbor.size(), 6, (const double *)b, x);
+
+		// Hessian
+		double Dxx = 2 * x[0], Dxy = x[2], Dyy = 2 * x[1];
+
+		// eigs
+		double tmp = sqrt((Dxx - Dyy) * (Dxx - Dyy) + 4 * Dxy * Dxy);
+		double v2x = 2 * Dxy, v2y = Dyy - Dxx + tmp;
+		double norm = sqrt(v2x * v2x + v2y * v2y);
+		v2x /= norm; v2y /= norm;	// unit vector
+		double v1x = -v2y, v1y = v2x;	// orthonormal
+
+		double mu1 = (Dxx + Dyy + tmp) / 2;
+		double mu2 = (Dxx + Dyy - tmp) / 2;
+
+		double u1[3], u2[3];
+		if(fabs(mu1) < fabs(mu2))
+		{
+			cmin[i] = mu1;
+			cmax[i] = mu2;
+			u1[0] = 0; u1[1] = v1x; u1[2] = v1y;
+			u2[0] = 0; u2[1] = v2x; u2[2] = v2y;
+		}
+		else
+		{
+			cmin[i] = mu2;
+			cmax[i] = mu1;
+			u1[0] = 0; u1[1] = v2x; u1[2] = v2y;
+			u2[0] = 0; u2[1] = v1x; u2[2] = v1y;
+		}
+		Coordinate::rotPointInv(u1, mat, umin[i]);
+		Coordinate::rotPointInv(u2, mat, umax[i]);
+
+		delete [] M;
+		delete [] A;
+		delete [] b;
+	}
+	if (minNull)
+	{
+		delete [] work_min;
+		delete [] umin;
+		umin = NULL;
+	}
+	if (maxNull)
+	{
+		delete [] work_max;
+		delete [] umax;
+		umax = NULL;
+	}
+}
+
+void SurfaceUtil::curvature_quad(const Mesh *mesh, float *cmin, float *cmax, float **umin, float **umax)
+{
+	const int n = mesh->nVertex();
+	double *cmin_d = new double[n];
+	double *cmax_d = new double[n];
+	double **umin_d = new double*[n];
+	double **umax_d = new double*[n];
+	double *work_min = new double[n * 3];
+	double *work_max = new double[n * 3];
+	for (int i = 0; i < n; i++)
+	{
+		umin_d[i] = &work_min[i * 3];
+		umax_d[i] = &work_max[i * 3];
+	}
+	curvature_quad(mesh, cmin_d, cmax_d, umin_d, umax_d);
+	for (int i = 0; i < n; i++)
+	{
+		cmin[i] = (float)cmin_d[i];
+		cmax[i] = (float)cmax_d[i];
+		for (int j = 0; j < 3; j++)
+		{
+			if (umin != NULL) umin[i][j] = (float)umin_d[i][j];
+			if (umax != NULL) umax[i][j] = (float)umax_d[i][j];
+		}
+	}
+
+	delete [] cmin_d;
+	delete [] cmax_d;
+	delete [] umin_d;
+	delete [] umax_d;
+	delete [] work_min;
+	delete [] work_max;
+}
+
 void SurfaceUtil::sphere(Mesh *mesh, int type, int max_iter)
 {
 	const int n = mesh->nVertex();

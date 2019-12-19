@@ -17,7 +17,8 @@ Mesh Library (MeshLib) - A collection of fundamental surface processing C++ libr
 * SurfaceUtil: a collection of surface processing classes
   * Smoothing: NN smoothing
   * Curvature: tensor-based principal curvature approximation
-  * Sphere: conformal/area-preserving sphere mapping
+  * Curvature_quad: quadratic fit-based principal curvature approximation
+  * Sphere: conformal/area-preserving spherical mapping
 * Geodesic: fast marching solver for static Hamilton-Jacobi PDEs/Eikonal equations (ported from Gabriel Peyré's implementation)
 
 ## History
@@ -27,6 +28,7 @@ Mesh Library (MeshLib) - A collection of fundamental surface processing C++ libr
 
 ## Publications
 * Selected publications using this library
+  * Lyu, I., Kang, H., Woodward, N., Styner, M., Landman, B., <a href="https://doi.org/10.1016/j.media.2019.06.013">Hierarchical Spherical Deformation for Cortical Surface Registration</a>, <i>Medical Image Analysis</i>, 57, 72-88, 2019
   * Lyu, I., Styner, M., Landman, B., <a href="https://doi.org/10.1007/978-3-030-00928-1_96">Hierarchical Spherical Deformation for Shape Correspondence</a>, <i>Medical Image Computing and Computer Assisted Intervention (MICCAI) 2018</i>, LNCS11070, 853-861, 2018
   * Lyu, I., Kim, S., Girault, J., Gilmore, J., Styner, M., <a href="https://doi.org/10.1016/j.media.2018.06.009">A Cortical Shape-Adaptive Approach to Local Gyrification Index</a>, <i>Medical Image Analysis</i>, 48, 244-258, 2018
   * Lyu, I., Kim, S., Woodward, N., Styner, M., Landman, B., <a href="http://dx.doi.org/10.1109/TMI.2017.2787589">TRACE: A Topological Graph Representation for Automatic Sulcal Curve Extraction</a>, <i>IEEE Transactions on Medical Imaging</i>, 37(7), 1653-1663, 2018

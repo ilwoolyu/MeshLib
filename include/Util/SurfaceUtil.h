@@ -49,6 +49,8 @@ public:
 	static void smoothing(const Mesh *mesh, int iter, double *data);
 	static void curvature(const Mesh *mesh, double *cmin, double *cmax, double **umin = NULL, double **umax = NULL, int nIterSmoothingTensor = 0);
 	static void curvature(const Mesh *mesh, float *cmin, float *cmax, float **umin = NULL, float **umax = NULL, int nIterSmoothingTensor = 0);
+	static void curvature_quad(const Mesh *mesh, double *cmin, double *cmax, double **umin, double **umax);
+	static void curvature_quad(const Mesh *mesh, float *cmin, float *cmax, float **umin, float **umax);
 	static void sphere(Mesh *mesh, int type = 0, int max_iter = 10000);
 
 private:

@@ -1611,6 +1611,38 @@ void LinearAlgebra::eig3symmetric(const double M[3][3], double lambda[3], double
 		delete [] work;
 	}
 }
+void LinearAlgebra::Ab(const double **A, int n, int m, const double *b, double *x)
+{
+	// least squares: ATA needs to be full rank to gaurantee a unique solution
+	// A = n by m, n >= m
+	// b = n by 1
+	double *work = new double[m * m];
+	double **ATA = new double*[m];
+	double *ATb = x;
+
+	for (int i = 0; i < m; i++) ATA[i] = &work[m * i];
+	for (int i = 0; i < m; i++)
+	{
+		for (int j = i; j < m; j++)
+		{
+			ATA[i][j] = 0;
+			for (int k = 0; k < n; k++)
+			{
+				ATA[i][j] += A[k][i] * A[k][j];
+			}
+			ATA[j][i] = ATA[i][j];
+		}
+		ATb[i] = 0;
+		for (int j = 0; j < n; j++)
+		{
+			ATb[i] += A[j][i] * b[j];
+		}
+	}
+	gaussElim((const double **)ATA, m, ATb);
+
+	delete [] work;
+	delete [] ATA;
+}
 double LinearAlgebra::trace3(const double M[3][3])
 {
 	return M[0][0] + M[1][1] + M[2][2];
@@ -1621,12 +1653,73 @@ double LinearAlgebra::det3(const double M[3][3])
 			M[0][1] * (M[1][0] * M[2][2] - M[1][2] * M[2][0]) + 
 			M[0][2] * (M[1][0] * M[2][1] - M[1][1] * M[2][0]);
 }
+void LinearAlgebra::gaussElim(const double **M, int n, double *x)
+{
+	// square matrix only
+	double **A = new double*[n];	// rows
+	double *work = new double[n * (n + 1)];
+	double *tRow = new double[n + 1];
+	for (int i = 0; i < n; i++)
+	{
+		A[i] = &work[(n + 1) * i];
+		for (int j = 0; j < n; j++)
+			A[i][j] = M[i][j];
+		A[i][n] = x[i];
+	}
 
+	for (int i = 0; i < n - 1; i++)	// row
+	{
+		// maximum pivot
+		double maxElem = fabs(A[i][i]);
+		int r = i;
+		for (int j = i + 1; j < n; j++) // lower rows
+		{
+			double absA = fabs(A[j][i]);
+			if (maxElem < absA)
+			{
+				maxElem = absA;
+				r = j;
+			}
+		}
+		// swap
+		if (r != i)
+		{
+			memcpy(tRow, A[r], sizeof(double) * (n + 1));
+			memcpy(A[r], A[i], sizeof(double) * (n + 1));
+			memcpy(A[i], tRow, sizeof(double) * (n + 1));
+			double tx = x[r];
+			x[r] = x[i];
+			x[i] = tx;
+		}
+		// elimination
+		for (int j = i + 1; j < n; j++) // lower rows
+		{
+			double c = A[j][i] / A[i][i];
+			A[j][i] = 0;
+			for (int k = i + 1; k <= n; k++)
+				A[j][k] -= A[i][k] * c;
+		}
+	}
+
+	// solution
+	for (int i = n - 1; i >= 0; i--)
+	{
+		x[i] = A[i][n];
+		for (int j = i + 1; j < n; j++)
+			x[i] -= A[i][j] * x[j];
+		x[i] /= A[i][i];
+	}
+
+	delete [] A;
+	delete [] work;
+	delete [] tRow;
+}
 void LinearAlgebra::echelonEigv(const double **M, int n, double *x)
 {
 	// square matrix only
 	double **A = new double*[n];	// rows
 	double *work = new double[n * n];
+	double *tRow = new double[n];
 	for (int i = 0; i < n; i++)
 	{
 		A[i] = &work[n * i];
@@ -1634,27 +1727,49 @@ void LinearAlgebra::echelonEigv(const double **M, int n, double *x)
 			A[i][j] = M[i][j];
 	}
 	
-	for (int i = 0; i < n - 1; i++)	// row
+	for (int i = 0; i < n - 2; i++)	// row
 	{
+		// maximum pivot
+		double maxElem = fabs(A[i][i]);
+		int r = i;
 		for (int j = i + 1; j < n; j++) // lower rows
 		{
-			double c = M[j][i] / M[i][i];
-			for (int k = 0; k < n; k++)
+			double absA = fabs(A[j][i]);
+			if (maxElem < absA)
+			{
+				maxElem = absA;
+				r = j;
+			}
+		}
+		// swap
+		if (r != i)
+		{
+			memcpy(tRow, A[r], sizeof(double) * n);
+			memcpy(A[r], A[i], sizeof(double) * n);
+			memcpy(A[i], tRow, sizeof(double) * n);
+		}
+		// elimination
+		for (int j = i + 1; j < n - 1; j++) // lower rows
+		{
+			double c = A[j][i] / A[i][i];
+			A[j][i] = 0;
+			for (int k = i + 1; k < n; k++)
 				A[j][k] -= A[i][k] * c;
 		}
 	}
 
 	// solution
-	x[n - 1] = 1;
+	x[n - 1] = 1;	// fix the last elem to 1
 	for (int i = n - 2; i >= 0; i--)
 	{
 		x[i] = 0;
 		for (int j = i + 1; j < n; j++)
-			x[i] += A[i][j] * x[j];
-		x[i] /= -A[i][i];
+			x[i] -= A[i][j] * x[j];
+		x[i] /= A[i][i];
 	}
 
 	delete [] A;
 	delete [] work;
+	delete [] tRow;
 }
 

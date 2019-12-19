@@ -158,9 +158,11 @@ class LinearAlgebra
 {
 public:
 	static void eig3symmetric(const double M[3][3], double lambda[3], double eigv[3][3]);
+	static void Ab(const double **A, int n, int m, const double *b, double *x);
 	static double trace3(const double M[3][3]);
 	static double det3(const double M[3][3]);
 private:
+	static void gaussElim(const double **M, int n, double *x);
 	static void echelonEigv(const double **M, int n, double *x);
 };
 

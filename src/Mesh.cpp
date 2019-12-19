@@ -574,10 +574,24 @@ void Mesh::setMesh(const float *vertex, const int *face, const float *normal, in
 			m_face[i]->setVertex(v);
 			m_face[i]->setNormal(n);
 			m_face[i]->setList(idx);
-			Normal fn = m_face[i]->faceNormal();
+
+			const int *idx = m_face[i]->list();
+			Vector e1(m_vertex[idx[1]]->fv(), m_vertex[idx[0]]->fv());
+			Vector e2(m_vertex[idx[2]]->fv(), m_vertex[idx[1]]->fv());
+			Vector e3(m_vertex[idx[0]]->fv(), m_vertex[idx[2]]->fv());
+			Vector FN = e1.cross(e2);
+			e1.unit(); e2.unit(); e3.unit();
+			float w1 = acos(e1 * -e3);
+			float w2 = acos(e2 * -e1);
+			float w3 = acos(e3 * -e2);
+
+			*m_normal[idx[0]] += Normal((FN * w1).fv());
+			*m_normal[idx[1]] += Normal((FN * w2).fv());
+			*m_normal[idx[2]] += Normal((FN * w3).fv());
+			/*Normal fn = m_face[i]->faceNormal();
 			*m_normal[idx[0]] += fn;
 			*m_normal[idx[1]] += fn;
-			*m_normal[idx[2]] += fn;
+			*m_normal[idx[2]] += fn;*/
 		}
 	}
 
@@ -603,11 +617,12 @@ void Mesh::openFile(const char *filename)
 	else if (!strcmp(format, "vtk")) mesh = new VtkIO(filename);
 	else
 	{
-		cout << "Not supported format!" << endl;
+		cout << "Unsupported format!" << endl;
 		return;
 	}
 	
 	setMesh(mesh->vertex(0), mesh->face(0), mesh->normal(0), mesh->nVertex(), mesh->nFace(), mesh->nNormal(), mesh->hasNormal());
+	updateNormal();
 
 	delete mesh;
 }
@@ -618,12 +633,22 @@ void Mesh::updateNormal(void)
 	for (int i = 0; i < m_nFace; i++)
 	{
 		const int *idx = m_face[i]->list();
-		const Normal *n[3];
-		n[0] = m_normal[idx[0]]; n[1] = m_normal[idx[1]]; n[2] = m_normal[idx[2]];
-		Normal fn = m_face[i]->faceNormal();
+		Vector e1(m_vertex[idx[1]]->fv(), m_vertex[idx[0]]->fv());
+		Vector e2(m_vertex[idx[2]]->fv(), m_vertex[idx[1]]->fv());
+		Vector e3(m_vertex[idx[0]]->fv(), m_vertex[idx[2]]->fv());
+		Vector FN = e1.cross(e2);
+		e1.unit(); e2.unit(); e3.unit();
+		float w1 = acos(e1 * -e3);
+		float w2 = acos(e2 * -e1);
+		float w3 = acos(e3 * -e2);
+
+		*m_normal[idx[0]] += Normal((FN * w1).fv());
+		*m_normal[idx[1]] += Normal((FN * w2).fv());
+		*m_normal[idx[2]] += Normal((FN * w3).fv());
+		/*Normal fn = m_face[i]->faceNormal();
 		*m_normal[idx[0]] += fn;
 		*m_normal[idx[1]] += fn;
-		*m_normal[idx[2]] += fn;
+		*m_normal[idx[2]] += fn;*/
 	}
 	for (int i = 0; i < m_nNormal; i++) m_normal[i]->normalize();
 }
