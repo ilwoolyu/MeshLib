@@ -702,9 +702,10 @@ void SurfaceUtil::principalCurvature(const std::vector<double **> Tv, const int 
 		double T[3][3] = {{Tv[i][0][0], Tv[i][0][1], Tv[i][0][2]}, {Tv[i][1][0], Tv[i][1][1], Tv[i][1][2]}, {Tv[i][2][0], Tv[i][2][1], Tv[i][2][2]}};
 
 		// flat
-		if (T[0][0] == 0 && T[0][1] == 0 && T[0][2] == 0 &&
-			T[1][0] == 0 && T[1][1] == 0 && T[1][2] == 0 &&
-			T[2][0] == 0 && T[2][1] == 0 && T[2][2] == 0)
+		double eps = 1e-6;
+		if (fabs(T[0][0]) < eps && fabs(T[0][1]) < eps && fabs(T[0][2]) < eps &&
+			fabs(T[1][0]) < eps && fabs(T[1][1]) < eps && fabs(T[1][2]) < eps &&
+			fabs(T[2][0]) < eps && fabs(T[2][1]) < eps && fabs(T[2][2]) < eps)
 		{
 			cmin[i] = 0;
 			cmax[i] = 0;
