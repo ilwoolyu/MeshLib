@@ -701,6 +701,18 @@ void SurfaceUtil::principalCurvature(const std::vector<double **> Tv, const int 
 		double eigv[3][3];
 		double T[3][3] = {{Tv[i][0][0], Tv[i][0][1], Tv[i][0][2]}, {Tv[i][1][0], Tv[i][1][1], Tv[i][1][2]}, {Tv[i][2][0], Tv[i][2][1], Tv[i][2][2]}};
 
+		// flat
+		if (T[0][0] == 0 && T[0][1] == 0 && T[0][2] == 0 &&
+			T[1][0] == 0 && T[1][1] == 0 && T[1][2] == 0 &&
+			T[2][0] == 0 && T[2][1] == 0 && T[2][2] == 0)
+		{
+			cmin[i] = 0;
+			cmax[i] = 0;
+			umin[i][0] = 0; umin[i][0] = 0; umin[i][0] = 0;
+			umax[i][0] = 0; umax[i][0] = 0; umax[i][0] = 0;
+			continue;
+		}
+
 		LinearAlgebra::eig3symmetric(T, lambda, eigv);
 
 		if ((fabs(lambda[0]) > fabs(lambda[1]) && fabs(lambda[0]) < fabs(lambda[2])) || 
