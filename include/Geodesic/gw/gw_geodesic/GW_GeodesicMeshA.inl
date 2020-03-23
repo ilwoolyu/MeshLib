@@ -124,7 +124,8 @@ GW_INLINE
 void GW_GeodesicMeshA::RegisterLam1CallbackFunction( T_Lam1CallbackFunction pFunc )
 {
 	Lam1Callback_ = pFunc;
-}GW_INLINE
+}
+GW_INLINE
 void GW_GeodesicMeshA::RegisterLam2CallbackFunction( T_Lam2CallbackFunction pFunc )
 {
 	Lam2Callback_ = pFunc;
@@ -392,8 +393,8 @@ GW_Float GW_GeodesicMeshA::ComputeVertexDistance( GW_GeodesicFace& CurrentFace, 
 			/*	you can choose wether to use Sethian or my own derivation of the equation.
 				Basicaly, it gives the same answer up to normalization constants */
 //			#define USE_SETHIAN
-//			#define USE_FSM
-			#define USE_SAMPLING
+			#define USE_FSM
+//			#define USE_SAMPLING
 
 			/* first special case for obtuse angles */
 			if( dot<0 && bUseUnfolding_ )
@@ -441,6 +442,19 @@ GW_Float GW_GeodesicMeshA::ComputeVertexDistance( GW_GeodesicFace& CurrentFace, 
 	return GW_INFINITE;
 }
 
+/*------------------------------------------------------------------------------*/
+// Name : GW_GeodesicMeshA::ComputeUpdate_SamplingMethod
+/**
+ *  \param  Vert1 [GW_GeodesicVertex] 1st vertex.
+ *  \param  Vert2 [GW_GeodesicVertex] 2nd vertex.
+ *  \param  d1 [GW_Float] Distance value at 1st vertex.
+ *  \param  d2 [GW_Float] Distance value at 2nd vertex.
+ *  \return [GW_Float] The update value.
+ *  \author Ilwoo Lyu
+ *  \date   8-29-2016
+ * 
+ *  Compute the update value using sampling method.
+ */
 GW_INLINE
 GW_Float GW_GeodesicMeshA::ComputeUpdate_SamplingMethod( GW_GeodesicVertex& CurrentVertex, GW_GeodesicVertex& Vert1, GW_GeodesicVertex& Vert2, GW_Float d1, GW_Float d2 )
 {
@@ -470,6 +484,20 @@ GW_Float GW_GeodesicMeshA::ComputeUpdate_SamplingMethod( GW_GeodesicVertex& Curr
 	return t;
 }
 
+/*------------------------------------------------------------------------------*/
+// Name : GW_GeodesicMeshA::ComputeUpdate_FastSweepingMethod
+/**
+ *  \param  Vert1 [GW_GeodesicVertex] 1st vertex.
+ *  \param  Vert2 [GW_GeodesicVertex] 2nd vertex.
+ *  \param  d1 [GW_Float] Distance value at 1st vertex.
+ *  \param  d2 [GW_Float] Distance value at 2nd vertex.
+ *  \param  dot [GW_Float] Value of the dot product between the 2 edges.
+ *  \return [GW_Float] The update value.
+ *  \author Ilwoo Lyu
+ *  \date   8-29-2016
+ * 
+ *  Compute the update value using Qian's method.
+ */
 GW_INLINE
 GW_Float GW_GeodesicMeshA::ComputeUpdate_FastSweepingMethod( GW_GeodesicVertex& CurrentVertex, GW_GeodesicVertex& Vert1, GW_GeodesicVertex& Vert2, GW_Float d1, GW_Float d2, GW_Float dot, GW_Float F1, GW_Float F2 )
 {
@@ -513,7 +541,7 @@ GW_Float GW_GeodesicMeshA::ComputeUpdate_FastSweepingMethod( GW_GeodesicVertex& 
 	
 	double w1 = a * g1 * g1 + b * g3 * g3 - 2 * c * g1 * g3;
 	double w2 = a * g1 * g2 + b * g3 * g4 - c * (g1 * g4 + g2 * g3);
-	double w3 = a * g2 * g2 + b * g4 * g4 - 2 * c * g2 * g4 - 1 / a;
+	double w3 = a * g2 * g2 + b * g4 * g4 - 2 * c * g2 * g4 - 1 / a / b;
 
 	double disc = w2 * w2 - w1 * w3;
 	if (disc >= 0)

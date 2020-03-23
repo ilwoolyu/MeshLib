@@ -359,8 +359,8 @@ void GeodesicA::setupCurvatureTensor(void)
 		if (M < invcmax) M = invcmax;
 	}
 	
-	cout << "Min Curv: " << m << " ";
-	cout << "Max Curv: " << M << endl;
+	/*cout << "Min Curv: " << m << " ";
+	cout << "Max Curv: " << M << endl;*/
 	GW_Float a = 1, b = 100;
 	for (int i = 0; i < nverts; i++)
 	{
