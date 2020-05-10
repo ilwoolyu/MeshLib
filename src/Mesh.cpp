@@ -241,6 +241,7 @@ Normal::Normal(void)
 
 Normal::Normal(const int id)
 {
+	m_normal[0] = m_normal[1] = m_normal[2] = 0;
 	m_id = id;
 }
 
@@ -629,7 +630,7 @@ void Mesh::openFile(const char *filename)
 
 void Mesh::updateNormal(void)
 {
-	for (int i = 0; i < m_nNormal; i++) *m_normal[i] = 0;
+	for (int i = 0; i < m_nNormal; i++) *m_normal[i] *= 0;
 	for (int i = 0; i < m_nFace; i++)
 	{
 		const int *idx = m_face[i]->list();
