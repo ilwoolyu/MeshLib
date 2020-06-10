@@ -2,7 +2,7 @@
 *	AABB.cpp
 *
 *	Release: July 2011
-*	Update: April 2017
+*	Update: June 2020
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
@@ -24,6 +24,7 @@ AABB::AABB(void)
 AABB::AABB(const Mesh *mesh)
 {
 	m_mesh = mesh;
+	m_visited = new bool[m_mesh->nFace()];
 	initTree();
 	update();
 }
@@ -31,55 +32,62 @@ AABB::~AABB(void)
 {
 	for (int i = 0; i < m_tree->cand.size(); i++) delete [] &m_tree->cand[i];
 	deleteTree(m_tree);
+	delete [] m_visited;
 }
-int AABB::closestFace(float *v, float *coeff, float range)
+int AABB::closestFace(float *v, float *coeff, float range, float maxdist)
 {
 	float err = 0; // numerical error
-	bool success = false;
-	int index = 0;
+	int index = -1;
+	memset(m_visited, 0, m_mesh->nFace() * sizeof(bool));
 
 	float vmin[3] = {v[0] - range, v[1] - range, v[2] - range};
 	float vmax[3] = {v[0] + range, v[1] + range, v[2] + range};
 	vector<int> cand;
 	float eps = 0;
-	for (int trial = 0; cand.empty(); trial++)
+	if (maxdist > 0)
 	{
-		searchTree(vmin, vmax, m_tree, &cand, eps);
-		if (trial == 0) eps = 1e-7;
-		else eps *= 10;
+		searchTree(vmin, vmax, m_tree, &cand, maxdist);
 	}
-	sort(cand.begin(), cand.end());
-	cand.erase(unique(cand.begin(), cand.end()), cand.end());
-
-	for (int trial = 0; !success; trial++)
+	else
 	{
-		float min_dist = FLT_MAX;
-		for (int i = 0; i < cand.size(); i++)
+		for (int trial = 0; cand.empty(); trial++)
 		{
-			const float *a = m_mesh->face(cand[i])->vertex(0)->fv();
-			const float *b = m_mesh->face(cand[i])->vertex(1)->fv();
-			const float *c = m_mesh->face(cand[i])->vertex(2)->fv();
-
-			// closest distance
-			float dist = Coordinate::dpoint2tri(a, b, c, v);
-
-			if (dist < min_dist)
-			{
-				index = cand[i];
-				min_dist = dist;
-			}
+			searchTree(vmin, vmax, m_tree, &cand, eps);
+			if (trial == 0) eps = 1e-7;
+			else eps *= 10;
 		}
-		success = true;
 	}
 
-	const Face &f = *m_mesh->face(index);
-	const Vertex &a = *f.vertex(0);
-	const Vertex &b = *f.vertex(1);
-	const Vertex &c = *f.vertex(2);
+	float min_dist = FLT_MAX;
+	for (int i = 0; i < cand.size(); i++)
+	{
+		if (m_visited[cand[i]]) continue;
+		m_visited[cand[i]] = true;
 
-	// bary centric
-	Coordinate::cart2bary((float *)a.fv(), (float *)b.fv(), (float *)c.fv(), v, coeff);
+		const float *a = m_mesh->face(cand[i])->vertex(0)->fv();
+		const float *b = m_mesh->face(cand[i])->vertex(1)->fv();
+		const float *c = m_mesh->face(cand[i])->vertex(2)->fv();
 
+		// closest distance
+		float dist = Coordinate::dpoint2tri(a, b, c, v);
+
+		if (dist < min_dist || (dist == min_dist && index > cand[i]))
+		{
+			index = cand[i];
+			min_dist = dist;
+		}
+	}
+
+	if (index > -1)
+	{
+		const Face &f = *m_mesh->face(index);
+		const Vertex &a = *f.vertex(0);
+		const Vertex &b = *f.vertex(1);
+		const Vertex &c = *f.vertex(2);
+
+		// bary centric
+		Coordinate::cart2bary((float *)a.fv(), (float *)b.fv(), (float *)c.fv(), v, coeff);
+	}
 	return index;
 }
 void AABB::update()

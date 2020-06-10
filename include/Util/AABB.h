@@ -2,7 +2,7 @@
 *	AABB.h
 *
 *	Release: July 2011
-*	Update: April 2017
+*	Update: June 2020
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
@@ -32,12 +32,13 @@ protected:
 	};
 	node *m_tree;
 	const Mesh *m_mesh;
+	bool *m_visited;
 
 public:
 	AABB(void);
 	AABB(const Mesh *mesh);
 	~AABB(void);
-	int closestFace(float *v, float *coeff, float range = 0);
+	int closestFace(float *v, float *coeff, float range = 0, float maxdist = 0);
 	void update();
 	void searchTree(const float *p, vector<int> *cand, float eps = 0);
 

@@ -2,7 +2,7 @@
 *	AABB_Sphere.cpp
 *
 *	Release: March 2017
-*	Update: May 2018
+*	Update: June 2020
 *
 *	Vanderbilt University
 *	Electrical Engineering and Computer Science
@@ -77,8 +77,6 @@ int AABB_Sphere::closestFaceBool(float *v, float *coeff, bool *xcand, const floa
 	}
 	if (cand.empty()) return -1;
 	
-	sort(cand.begin(), cand.end());
-
 	float min_dist = FLT_MAX;
 	float tcoeff[3];
 	Vector V_proj;
@@ -103,7 +101,7 @@ int AABB_Sphere::closestFaceBool(float *v, float *coeff, bool *xcand, const floa
 		{
 			// closest distance
 			float dist = Coordinate::dpoint2tri(a, b, c, v);
-			if (dist < min_dist)
+			if (dist < min_dist || (dist == min_dist && index > cand[i]))
 			{
 				index = cand[i];
 				min_dist = dist;
