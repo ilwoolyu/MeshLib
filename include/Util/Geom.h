@@ -32,6 +32,7 @@ public:
 	const float * fv(void);
 	MathVector operator +(const MathVector &v);
 	MathVector operator -(const MathVector &v);
+	MathVector operator -(void);
 	MathVector operator *(const float v);
 	float operator *(const MathVector &v);
 	MathVector operator /(const float v);
@@ -69,6 +70,7 @@ public:
 	const double * fv(void);
 	MathVectorD operator +(const MathVectorD &v);
 	MathVectorD operator -(const MathVectorD &v);
+	MathVectorD operator -(void);
 	MathVectorD operator *(const double v);
 	double operator *(const MathVectorD &v);
 	MathVectorD operator /(const double v);
@@ -110,6 +112,7 @@ public:
 	static void proj2plane(const float a, const float b, const float c, const float d, const float *p0, float *p1);
 	static void proj2plane(const double a, const double b, const double c, const double d, const double *p0, double *p1);
 	static float dpoint2tri(const float *t0, const float *t1, const float *t2, float *p0);
+	static float dpoint2tri(const float *t0, const float *t1, const float *t2, float *p0, float *coeff);
 	static void sphmean(const float *v1, const float *v2, float *v, float w = 0.5f);
 	static float arclen(const float *v1, const float *v2);
 };

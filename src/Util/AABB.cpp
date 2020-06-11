@@ -69,25 +69,19 @@ int AABB::closestFace(float *v, float *coeff, float range, float maxdist)
 		const float *c = m_mesh->face(cand[i])->vertex(2)->fv();
 
 		// closest distance
-		float dist = Coordinate::dpoint2tri(a, b, c, v);
+		float coeff0[3];
+		float dist = Coordinate::dpoint2tri(a, b, c, v, coeff0);
 
 		if (dist < min_dist || (dist == min_dist && index > cand[i]))
 		{
 			index = cand[i];
 			min_dist = dist;
+			coeff[0] = coeff0[0];
+			coeff[1] = coeff0[1];
+			coeff[2] = coeff0[2];
 		}
 	}
 
-	if (index > -1)
-	{
-		const Face &f = *m_mesh->face(index);
-		const Vertex &a = *f.vertex(0);
-		const Vertex &b = *f.vertex(1);
-		const Vertex &c = *f.vertex(2);
-
-		// bary centric
-		Coordinate::cart2bary((float *)a.fv(), (float *)b.fv(), (float *)c.fv(), v, coeff);
-	}
 	return index;
 }
 void AABB::update()

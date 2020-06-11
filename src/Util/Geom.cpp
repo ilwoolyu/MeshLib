@@ -110,6 +110,11 @@ MathVector MathVector::operator -(const MathVector &v)
 	return MathVector(m_vector[0] - v.m_vector[0], m_vector[1] - v.m_vector[1], m_vector[2] - v.m_vector[2]);
 }
 
+MathVector MathVector::operator -(void)
+{
+	return MathVector(-m_vector[0], -m_vector[1], -m_vector[2]);
+}
+
 MathVector MathVector::operator *(const float v)
 {
 	return MathVector(m_vector[0] * v, m_vector[1] * v, m_vector[2] * v);
@@ -311,6 +316,11 @@ MathVectorD MathVectorD::operator +(const MathVectorD &v)
 MathVectorD MathVectorD::operator -(const MathVectorD &v)
 {
 	return MathVectorD(m_vector[0] - v.m_vector[0], m_vector[1] - v.m_vector[1], m_vector[2] - v.m_vector[2]);
+}
+
+MathVectorD MathVectorD::operator -(void)
+{
+	return MathVectorD(-m_vector[0], -m_vector[1], -m_vector[2]);
 }
 
 MathVectorD MathVectorD::operator *(const double v)
@@ -820,6 +830,72 @@ void Coordinate::proj2plane(const double a, const double b, const double c, cons
 	p1[0] = p0[0] - a * portion;
 	p1[1] = p0[1] - b * portion;
 	p1[2] = p0[2] - c * portion;
+}
+float Coordinate::dpoint2tri(const float *t0, const float *t1, const float *t2, float *p0, float *coeff)
+{
+	// projection to the triangle
+	float p0_proj[3];
+	MathVector N = MathVector(t0, t1).cross(MathVector(t1, t2)).unit();
+	Coordinate::proj2plane(N[0], N[1], N[2], -N * MathVector(t0), p0, p0_proj);
+
+	// bary centric
+	Coordinate::cart2bary((float *)t0, (float *)t1, (float *)t2, p0_proj, coeff);
+
+	// contacting point
+	MathVector P;
+	float eps = 0;
+	if (coeff[0] < eps || coeff[1] < eps || coeff[2] < eps)
+	{
+		float len_e_ab = MathVector(t0, t1).norm();
+		float len_e_bc = MathVector(t1, t2).norm();
+		float len_e_ca = MathVector(t2, t0).norm();
+
+		float len_ab = MathVector(t0, t1).unit() * MathVector(t0, p0);
+		float len_bc = MathVector(t1, t2).unit() * MathVector(t1, p0);
+		float len_ca = MathVector(t2, t0).unit() * MathVector(t2, p0);
+
+		if (len_ab > len_e_ab) len_ab = len_e_ab;
+		if (len_bc > len_e_bc) len_bc = len_e_bc;
+		if (len_ca > len_e_ca) len_ca = len_e_ca;
+		if (len_ab < 0) len_ab = 0;
+		if (len_bc < 0) len_bc = 0;
+		if (len_ca < 0) len_ca = 0;
+
+		MathVector V_ab = MathVector(t0, t1).unit() * len_ab + MathVector(t0);
+		MathVector V_bc = MathVector(t1, t2).unit() * len_bc + MathVector(t1);
+		MathVector V_ca = MathVector(t2, t0).unit() * len_ca + MathVector(t2);
+
+		float dist_ab = (V_ab - p0).norm();
+		float dist_bc = (V_bc - p0).norm();
+		float dist_ca = (V_ca - p0).norm();
+
+		if (dist_ab <= dist_bc && dist_ab <= dist_ca)
+		{
+			coeff[1] = len_ab / len_e_ab;
+			coeff[0] = 1 - coeff[1];
+			coeff[2] = 0;
+			P = V_ab;
+		}
+		else if (dist_bc <= dist_ca && dist_bc <= dist_ab)
+		{
+			coeff[2] = len_bc / len_e_bc;
+			coeff[1] = 1 - coeff[2];
+			coeff[0] = 0;
+			P = V_bc;
+		}
+		else
+		{
+			coeff[0] = len_ca / len_e_ca;
+			coeff[2] = 1 - coeff[0];
+			coeff[1] = 0;
+			P = V_ca;
+		}
+	}
+	else
+	{
+		P = MathVector(p0_proj);
+	}
+	return (MathVector(p0) - P).norm();
 }
 float Coordinate::dpoint2tri(const float *t0, const float *t1, const float *t2, float *p0)
 {
