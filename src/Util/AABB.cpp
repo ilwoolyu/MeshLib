@@ -20,6 +20,8 @@ using namespace std;
 
 AABB::AABB(void)
 {
+	m_mesh = NULL;
+	m_visited = NULL;
 }
 AABB::AABB(const Mesh *mesh)
 {
