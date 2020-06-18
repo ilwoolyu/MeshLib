@@ -582,9 +582,18 @@ void Mesh::setMesh(const float *vertex, const int *face, const float *normal, in
 			Vector e3(m_vertex[idx[0]]->fv(), m_vertex[idx[2]]->fv());
 			Vector FN = e1.cross(e2);
 			e1.unit(); e2.unit(); e3.unit();
-			float w1 = acos(e1 * -e3);
-			float w2 = acos(e2 * -e1);
-			float w3 = acos(e3 * -e2);
+			float e13 = e1 * -e3;
+			if (e13 > 1) e13 = 1;
+			if (e13 < -1) e13 = -1;
+			float e21 = e2 * -e1;
+			if (e21 > 1) e21 = 1;
+			if (e21 < -1) e21 = -1;
+			float e32 = e3 * -e2;
+			if (e32 > 1) e32 = 1;
+			if (e32 < -1) e32 = -1;
+			float w1 = acos(e13);
+			float w2 = acos(e21);
+			float w3 = acos(e32);
 
 			*m_normal[idx[0]] += Normal((FN * w1).fv());
 			*m_normal[idx[1]] += Normal((FN * w2).fv());
@@ -639,9 +648,18 @@ void Mesh::updateNormal(void)
 		Vector e3(m_vertex[idx[0]]->fv(), m_vertex[idx[2]]->fv());
 		Vector FN = e1.cross(e2);
 		e1.unit(); e2.unit(); e3.unit();
-		float w1 = acos(e1 * -e3);
-		float w2 = acos(e2 * -e1);
-		float w3 = acos(e3 * -e2);
+		float e13 = e1 * -e3;
+		if (e13 > 1) e13 = 1;
+		if (e13 < -1) e13 = -1;
+		float e21 = e2 * -e1;
+		if (e21 > 1) e21 = 1;
+		if (e21 < -1) e21 = -1;
+		float e32 = e3 * -e2;
+		if (e32 > 1) e32 = 1;
+		if (e32 < -1) e32 = -1;
+		float w1 = acos(e13);
+		float w2 = acos(e21);
+		float w3 = acos(e32);
 
 		*m_normal[idx[0]] += Normal((FN * w1).fv());
 		*m_normal[idx[1]] += Normal((FN * w2).fv());
