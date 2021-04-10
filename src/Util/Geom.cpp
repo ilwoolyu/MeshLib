@@ -1205,7 +1205,7 @@ double Series::factorial(int x)
 double Series::factorial(int x, int stopx)
 {
 	if (x == stopx) return stopx;
-	return x * factorial(x - 1);
+	return x * factorial(x - 1, stopx);
 }
 
 void Series::legendre(int n, float x, float *Y)
