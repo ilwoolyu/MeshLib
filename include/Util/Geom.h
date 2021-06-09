@@ -122,8 +122,8 @@ class Series
 public:
 	static double factorial(int x);
 	static double factorial(int x, int stopx);
-	static void legendre(int n, float x, float *Y);
-	static void legendre(int n, double x, double *Y);
+	static void legendre(int n, float x, float *Y, float **preP = NULL, int base = 0);
+	static void legendre(int n, double x, double *Y, double **preP = NULL, int base = 0);
 	static void legendre2(int n, float x, float *Y, bool schmidt = false);
 	static void legendre2(int n, double x, double *Y, bool schmidt = false);
 };

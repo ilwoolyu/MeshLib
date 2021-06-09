@@ -1216,13 +1216,15 @@ double Series::factorial(int x, int stopx)
 	return fac;
 }
 
-void Series::legendre(int n, float x, float *Y)
+void Series::legendre(int n, float x, float *Y, float **preP, int base)
 {
 	if (n < 0) return;
 
 	if (n == 0)
 	{
 		Y[0] = 1.0;
+		if (preP != NULL)
+			preP[0][0] = 1.0;
 		return;
 	}
 
@@ -1231,42 +1233,71 @@ void Series::legendre(int n, float x, float *Y)
 	{
 		Y[0] = x;
 		Y[1] = factor;
+		if (preP != NULL)
+		{
+			preP[0][0] = 1.0;
+			preP[1][0] = x;
+			preP[1][1] = factor;
+		}
 		return;
 	}
 
-	float **P = new float*[n + 1];
-	for (int i = 0; i <= n; i++) P[i] = new float[n + 1];
-	P[0][0] = 1.0;		// P_0,0(x) = 1
-	P[1][0] = x;		// P_1,0(x) = x
-	P[1][1] = factor;	// P_1,1(x) = −sqrt(1 − x^2)
+	float **P;
+	bool pre = (preP != NULL && base > 1);
+	if (!pre)
+	{
+		base = 2;
+		P = new float*[n + 1];
+		for (int i = 0; i <= n; i++) P[i] = new float[i + 1];
+		P[0][0] = 1.0;		// P_0,0(x) = 1
+		P[1][0] = x;		// P_1,0(x) = x
+		P[1][1] = factor;	// P_1,1(x) = −sqrt(1 − x^2)
+	}
+	else
+	{
+		P = new float*[n + 1 - base + 2];
+		for (int i = 0; i <= n - base + 2; i++) P[i] = new float[i + 1 + base - 2];
+		memcpy(P[0], preP[0], sizeof(float) * (base - 1));
+		memcpy(P[1], preP[1], sizeof(float) * base);
+	}
 
-	for (int l = 2; l <= n; l++)
+	for (int l = base; l <= n; l++)
 	{
 		for (int m = 0; m < l - 1 ; m++)
 		{
 			// P_l,m = (2l-1)*x*P_l-1,m - (l+m-1)*x*P_l-2,m / (l-k)
-			P[l][m] = ((float)(2 * l - 1) * x * P[l - 1][m] - (float)(l + m - 1) * P[l - 2][m]) / (float)(l - m);
+			P[l - base + 2][m] = ((float)(2 * l - 1) * x * P[l - 1 - base + 2][m] - (float)(l + m - 1) * P[l - 2 - base + 2][m]) / (float)(l - m);
 		}
 		// P_l,l-1 = (2l-1)*x*P_l-1,l-1
-		P[l][l - 1] = (float)(2 * l - 1) * x * P[l - 1][l - 1];
+		P[l - base + 2][l - 1] = (float)(2 * l - 1) * x * P[l - 1 - base + 2][l - 1];
 		// P_l,l = (2l-1)*factor*P_l-1,l-1
-		P[l][l] = (float)(2 * l - 1) * factor * P[l - 1][l - 1];
+		P[l - base + 2][l] = (float)(2 * l - 1) * factor * P[l - 1 - base + 2][l - 1];
 	}
 
-	for (int i = 0; i <= n; i++) Y[i] = P[n][i];
+	for (int i = 0; i <= n; i++) Y[i] = P[n - base + 2][i];
 
 	// release memory
-	for (int i = 0; i <= n; i++) delete [] P[i];
+	if (preP != NULL)
+	{
+		if (pre)
+			std::swap(preP[0], preP[1]);
+		else
+			memcpy(preP[0], P[n - 1 - base + 2], sizeof(float) * n);
+		memcpy(preP[1], P[n - base + 2], sizeof(float) * (n + 1));
+	}
+	for (int i = 0; i <= n - base + 2; i++) delete [] P[i];
 	delete [] P;
 }
 
-void Series::legendre(int n, double x, double *Y)
+void Series::legendre(int n, double x, double *Y, double **preP, int base)
 {
 	if (n < 0) return;
 
 	if (n == 0)
 	{
 		Y[0] = 1.0;
+		if (preP != NULL)
+			preP[0][0] = 1.0;
 		return;
 	}
 
@@ -1275,32 +1306,59 @@ void Series::legendre(int n, double x, double *Y)
 	{
 		Y[0] = x;
 		Y[1] = factor;
+		if (preP != NULL)
+		{
+			preP[0][0] = 1.0;
+			preP[1][0] = x;
+			preP[1][1] = factor;
+		}
 		return;
 	}
 
-	double **P = new double*[n + 1];
-	for (int i = 0; i <= n; i++) P[i] = new double[n + 1];
-	P[0][0] = 1.0;		// P_0,0(x) = 1
-	P[1][0] = x;		// P_1,0(x) = x
-	P[1][1] = factor;	// P_1,1(x) = −sqrt(1 − x^2)
+	double **P;
+	bool pre = (preP != NULL && base > 1);
+	if (!pre)
+	{
+		base = 2;
+		P = new double*[n + 1];
+		for (int i = 0; i <= n; i++) P[i] = new double[i + 1];
+		P[0][0] = 1.0;		// P_0,0(x) = 1
+		P[1][0] = x;		// P_1,0(x) = x
+		P[1][1] = factor;	// P_1,1(x) = −sqrt(1 − x^2)
+	}
+	else
+	{
+		P = new double*[n + 1 - base + 2];
+		for (int i = 0; i <= n - base + 2; i++) P[i] = new double[i + 1 + base - 2];
+		memcpy(P[0], preP[0], sizeof(double) * (base - 1));
+		memcpy(P[1], preP[1], sizeof(double) * base);
+	}
 
-	for (int l = 2; l <= n; l++)
+	for (int l = base; l <= n; l++)
 	{
 		for (int m = 0; m < l - 1 ; m++)
 		{
 			// P_l,m = (2l-1)*x*P_l-1,m - (l+m-1)*x*P_l-2,m / (l-k)
-			P[l][m] = ((double)(2 * l - 1) * x * P[l - 1][m] - (double)(l + m - 1) * P[l - 2][m]) / (double)(l - m);
+			P[l - base + 2][m] = ((double)(2 * l - 1) * x * P[l - 1 - base + 2][m] - (double)(l + m - 1) * P[l - 2 - base + 2][m]) / (double)(l - m);
 		}
 		// P_l,l-1 = (2l-1)*x*P_l-1,l-1
-		P[l][l - 1] = (double)(2 * l - 1) * x * P[l - 1][l - 1];
+		P[l - base + 2][l - 1] = (double)(2 * l - 1) * x * P[l - 1 - base + 2][l - 1];
 		// P_l,l = (2l-1)*factor*P_l-1,l-1
-		P[l][l] = (double)(2 * l - 1) * factor * P[l - 1][l - 1];
+		P[l - base + 2][l] = (double)(2 * l - 1) * factor * P[l - 1 - base + 2][l - 1];
 	}
 
-	for (int i = 0; i <= n; i++) Y[i] = P[n][i];
+	for (int i = 0; i <= n; i++) Y[i] = P[n - base + 2][i];
 
 	// release memory
-	for (int i = 0; i <= n; i++) delete [] P[i];
+	if (preP != NULL)
+	{
+		if (pre)
+			std::swap(preP[0], preP[1]);
+		else
+			memcpy(preP[0], P[n - 1 - base + 2], sizeof(double) * n);
+		memcpy(preP[1], P[n - base + 2], sizeof(double) * (n + 1));
+	}
+	for (int i = 0; i <= n - base + 2; i++) delete [] P[i];
 	delete [] P;
 }
 

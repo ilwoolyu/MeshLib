@@ -26,14 +26,24 @@ void SphericalHarmonics::basis(int degree, float *p, float *Y, int from)
 	// square root of 2
 	const double sqr2 = sqrt(2.0f);
 
+	double *P[2];
+	P[0] = new double[degree + 1];
+	P[1] = new double[degree + 1];
+	int base = 0;
+
 	for (int l = from; l <= degree; l++)
 	{
 		// legendre part
 		bool schmidt = l > 85;
 		if (!schmidt)
-			Series::legendre(l, cos(theta), Pm);
+		{
+			Series::legendre(l, cos(theta), Pm, P, base);
+			base = l + 1;
+		}
 		else
+		{
 			Series::legendre2(l, cos(theta), Pm, schmidt);
+		}
 		double lconstant = sqrt((2 * l + 1) / (4 * PI));
 
 		int center = (l + 1) * (l + 1) - l - 1 - from * from;
@@ -50,6 +60,8 @@ void SphericalHarmonics::basis(int degree, float *p, float *Y, int from)
 		}
 	}
 
+	delete [] P[0];
+	delete [] P[1];
 	delete [] Pm;
 }
 
@@ -65,14 +77,24 @@ void SphericalHarmonics::basis(int degree, double *p, double *Y, int from)
 	// square root of 2
 	const double sqr2 = sqrt(2.0);
 
+	double *P[2];
+	P[0] = new double[degree + 1];
+	P[1] = new double[degree + 1];
+	int base = 0;
+
 	for (int l = from; l <= degree; l++)
 	{
 		// legendre part
 		bool schmidt = l > 85;
 		if (!schmidt)
-			Series::legendre(l, cos(theta), Pm);
+		{
+			Series::legendre(l, cos(theta), Pm, P, base);
+			base = l + 1;
+		}
 		else
+		{
 			Series::legendre2(l, cos(theta), Pm, schmidt);
+		}
 		double lconstant = sqrt((2 * l + 1) / (4 * PI));
 
 		int center = (l + 1) * (l + 1) - l - 1 - from * from;
@@ -89,5 +111,7 @@ void SphericalHarmonics::basis(int degree, double *p, double *Y, int from)
 		}
 	}
 
+	delete [] P[0];
+	delete [] P[1];
 	delete [] Pm;
 }
