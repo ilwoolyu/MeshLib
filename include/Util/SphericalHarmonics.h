@@ -2,12 +2,12 @@
 *	SphericalHarmonics.h
 *
 *	Release: August 2012
-*	Update: September 2015
+*	Update: June 2021
 *
-*	University of North Carolina at Chapel Hill
-*	Department of Computer Science
+*	Ulsan National Institute of Science and Technology
+*	Department of Computer Science and Engineering
 *	
-*	Ilwoo Lyu, ilwoolyu@cs.unc.edu
+*	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
 #pragma once
@@ -19,4 +19,3 @@ public:
 	static void basis(int degree, float *p, float *Y, int from = 0);
 	static void basis(int degree, double *p, double *Y, int from = 0);
 };
-

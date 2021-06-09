@@ -2,12 +2,12 @@
 *	Geom.h
 *
 *	Release: July 2011
-*	Update: October 2017
+*	Update: June 2021
 *
-*	University of North Carolina at Chapel Hill
-*	Department of Computer Science
+*	Ulsan National Institute of Science and Technology
+*	Department of Computer Science and Engineering
 *	
-*	Ilwoo Lyu, ilwoolyu@cs.unc.edu
+*	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
 #ifndef GEOM_HH_
@@ -124,6 +124,8 @@ public:
 	static double factorial(int x, int stopx);
 	static void legendre(int n, float x, float *Y);
 	static void legendre(int n, double x, double *Y);
+	static void legendre2(int n, float x, float *Y, bool schmidt = false);
+	static void legendre2(int n, double x, double *Y, bool schmidt = false);
 };
 
 class Statistics

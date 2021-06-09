@@ -24,10 +24,12 @@ Mesh Library (MeshLib) - A collection of fundamental surface processing C++ libr
 ## History
 * 2009-2011: initial version - base mesh class (Department of Computer Science at KAIST)
 * 2011-2016: extended version - surface utilities (Department of Computer Science at the University of North Carolina at Chapel Hill)
-* 2017-Present: maintenance - bug fix, optimization, etc. (Electrical Engineering and Computer Science at Vanderbilt University)
+* 2017-2021: maintenance - bug fix, optimization, etc. (Electrical Engineering and Computer Science at Vanderbilt University)
+* 2021-present: maintenance - bug fix, optimization, etc. (Department of Computer Science and Engineering at UNIST)
 
 ## Publications
 * Selected publications using this library
+  * Lyu I., Bao, S., Hao, L., Yao, J., Miller, J., Voorhies, W., Taylor, W., Bunge, S., Weiner, K., Landman, B., <a href="https://doi.org/10.1016/j.neuroimage.2021.117758">Labeling Lateral Prefrontal Sulci using Spherical Data Augmentation and Context-aware Training</a>, <i>NeuroImage</i>, 229, 117758, 2021
   * Lyu, I., Kang, H., Woodward, N., Styner, M., Landman, B., <a href="https://doi.org/10.1016/j.media.2019.06.013">Hierarchical Spherical Deformation for Cortical Surface Registration</a>, <i>Medical Image Analysis</i>, 57, 72-88, 2019
   * Lyu, I., Styner, M., Landman, B., <a href="https://doi.org/10.1007/978-3-030-00928-1_96">Hierarchical Spherical Deformation for Shape Correspondence</a>, <i>Medical Image Computing and Computer Assisted Intervention (MICCAI) 2018</i>, LNCS11070, 853-861, 2018
   * Lyu, I., Kim, S., Girault, J., Gilmore, J., Styner, M., <a href="https://doi.org/10.1016/j.media.2018.06.009">A Cortical Shape-Adaptive Approach to Local Gyrification Index</a>, <i>Medical Image Analysis</i>, 48, 244-258, 2018

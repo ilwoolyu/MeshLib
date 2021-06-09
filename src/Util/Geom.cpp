@@ -2,12 +2,12 @@
 *	Geom.cpp
 *
 *	Release: July 2011
-*	Update: October 2017
+*	Update: June 2021
 *
-*	University of North Carolina at Chapel Hill
-*	Department of Computer Science
+*	Ulsan National Institute of Science and Technology
+*	Department of Computer Science and Engineering
 *	
-*	Ilwoo Lyu, ilwoolyu@cs.unc.edu
+*	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
 #include <math.h>
@@ -1198,14 +1198,22 @@ float Coordinate::arclen(const float *v1, const float *v2)
 
 double Series::factorial(int x)
 {
-	if (x == 0) return 1;
-	return x * factorial(x - 1);
+	const double pre[16] = {1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800,
+							39916800, 479001600, 6227020800, 87178291200, 1307674368000};
+	if (x <= 15) return pre[x];
+	double fac = pre[15];
+	for (int i = 16; i <= x; i++) fac *= i;
+	return fac;
 }
 
 double Series::factorial(int x, int stopx)
 {
-	if (x == stopx) return stopx;
-	return x * factorial(x - 1, stopx);
+	const double pre[16] = {1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880, 3628800,
+							39916800, 479001600, 6227020800, 87178291200, 1307674368000};
+	if (x <= 15 && stopx <= 15) return pre[x] / pre[stopx - 1];
+	double fac = 1;
+	for (int i = stopx; i <= x; i++) fac *= i;
+	return fac;
 }
 
 void Series::legendre(int n, float x, float *Y)
@@ -1298,6 +1306,140 @@ void Series::legendre(int n, double x, double *Y)
 	// release memory
 	for (int i = 0; i <= n; i++) delete [] P[i];
 	delete [] P;
+}
+
+void Series::legendre2(int n, float x, float *Y, bool schmidt)
+{
+	// source from https://www.mathworks.com/help/matlab/ref/legendre.html
+	if (n < 0) return;
+
+	float factor = sqrt(1.0 - x * x);
+
+	// Init legendre
+	if (n == 0)
+	{
+		Y[0] = 1;
+		return;
+	}
+
+	// Easy values
+	if (n == 1)
+	{
+		Y[0] = x;
+		Y[1] = -factor;
+		return;
+	}
+
+	float *rootn = new float[2 * n + 1];
+	for (int i = 0; i < 2 * n + 1; i++) rootn[i] = sqrt(i);
+	float twocot = (factor == 0) ? 0: -2 * x / factor;
+	float sn = pow(-factor, n);
+
+	float c = 1;
+	for (int i = 1; i <= n; i++)
+		c *= (1.0 - 1.0 / (i * 2));
+	if (x != 1 && fabs(sn) > 0)
+	{
+		Y[n] = sqrt(c) * sn;
+		Y[n - 1] = Y[n] * twocot * n / rootn[2 * n];
+
+		for (int m = n - 2; m >= 0; m--)
+			Y[m] = (Y[m + 1] * twocot * (m + 1) - Y[m + 2] * rootn[n + m + 2] * rootn[n - m - 1]) / (rootn[n + m + 1] * rootn[n - m]);
+	}
+	else
+	{
+		for (int m = 1; m <= n; m++)
+			Y[m] = 0;
+	}
+
+	if (factor == 0)
+		Y[0] = pow(x, n);
+
+	if (!schmidt)
+	{
+		for (int m = 1; m < n; m++)
+			for (int j = n - m + 1; j < n + m + 1; j++)
+				Y[m] *= rootn[j];
+		for (int j = 1; j < 2 * n + 1; j++)
+			Y[n] *= rootn[j];
+	}
+	else
+	{
+		float sqr2 = sqrt(2);
+		float const1 = -1;
+		for (int j = 1; j < n + 1; j++)
+		{
+			Y[j] *= sqr2 * const1;
+			const1 *= -1;
+		}
+	}
+}
+
+void Series::legendre2(int n, double x, double *Y, bool schmidt)
+{
+	// source from https://www.mathworks.com/help/matlab/ref/legendre.html
+	if (n < 0) return;
+
+	double factor = sqrt(1.0 - x * x);
+
+	// Init legendre
+	if (n == 0)
+	{
+		Y[0] = 1;
+		return;
+	}
+
+	// Easy values
+	if (n == 1)
+	{
+		Y[0] = x;
+		Y[1] = -factor;
+		return;
+	}
+
+	double *rootn = new double[2 * n + 1];
+	for (int i = 0; i < 2 * n + 1; i++) rootn[i] = sqrt(i);
+	double twocot = (factor == 0) ? 0: -2 * x / factor;
+	double sn = pow(-factor, n);
+
+	double c = 1;
+	for (int i = 1; i <= n; i++)
+		c *= (1.0 - 1.0 / (i * 2));
+	if (x != 1 && fabs(sn) > 0)
+	{
+		Y[n] = sqrt(c) * sn;
+		Y[n - 1] = Y[n] * twocot * n / rootn[2 * n];
+
+		for (int m = n - 2; m >= 0; m--)
+			Y[m] = (Y[m + 1] * twocot * (m + 1) - Y[m + 2] * rootn[n + m + 2] * rootn[n - m - 1]) / (rootn[n + m + 1] * rootn[n - m]);
+	}
+	else
+	{
+		for (int m = 1; m <= n; m++)
+			Y[m] = 0;
+	}
+
+	if (factor == 0)
+		Y[0] = pow(x, n);
+
+	if (!schmidt)
+	{
+		for (int m = 1; m < n; m++)
+			for (int j = n - m + 1; j < n + m + 1; j++)
+				Y[m] *= rootn[j];
+		for (int j = 1; j < 2 * n + 1; j++)
+			Y[n] *= rootn[j];
+	}
+	else
+	{
+		double sqr2 = sqrt(2);
+		double const1 = -1;
+		for (int j = 1; j < n + 1; j++)
+		{
+			Y[j] *= sqr2 * const1;
+			const1 *= -1;
+		}
+	}
 }
 
 float Statistics::sum(float *A, int n)
