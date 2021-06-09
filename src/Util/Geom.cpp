@@ -1220,27 +1220,25 @@ void Series::legendre(int n, float x, float *Y)
 {
 	if (n < 0) return;
 
-	float **P = new float*[n + 1];
-	for (int i = 0; i <= n; i++) P[i] = new float[n + 1];
-	float factor = -sqrt(1.0 - pow(x,2));
-
-	// Init legendre
-	P[0][0] = 1.0;        // P_0,0(x) = 1
 	if (n == 0)
 	{
-		Y[0] = P[0][0];
+		Y[0] = 1.0;
 		return;
 	}
 
-	// Easy values
-	P[1][0] = x;      // P_1,0(x) = x
-	P[1][1] = factor;     // P_1,1(x) = −sqrt(1 − x^2)
+	float factor = -sqrt(1.0 - x * x);
 	if (n == 1)
 	{
-		Y[0] = P[1][0];
-		Y[1] = P[1][1];
+		Y[0] = x;
+		Y[1] = factor;
 		return;
 	}
+
+	float **P = new float*[n + 1];
+	for (int i = 0; i <= n; i++) P[i] = new float[n + 1];
+	P[0][0] = 1.0;		// P_0,0(x) = 1
+	P[1][0] = x;		// P_1,0(x) = x
+	P[1][1] = factor;	// P_1,1(x) = −sqrt(1 − x^2)
 
 	for (int l = 2; l <= n; l++)
 	{
@@ -1250,9 +1248,9 @@ void Series::legendre(int n, float x, float *Y)
 			P[l][m] = ((float)(2 * l - 1) * x * P[l - 1][m] - (float)(l + m - 1) * P[l - 2][m]) / (float)(l - m);
 		}
 		// P_l,l-1 = (2l-1)*x*P_l-1,l-1
-		P[l][l-1] = (float)(2 * l - 1) * x * P[l-1][l-1];
+		P[l][l - 1] = (float)(2 * l - 1) * x * P[l - 1][l - 1];
 		// P_l,l = (2l-1)*factor*P_l-1,l-1
-		P[l][l] = (float)(2 * l - 1) * factor * P[l-1][l-1];
+		P[l][l] = (float)(2 * l - 1) * factor * P[l - 1][l - 1];
 	}
 
 	for (int i = 0; i <= n; i++) Y[i] = P[n][i];
@@ -1266,27 +1264,25 @@ void Series::legendre(int n, double x, double *Y)
 {
 	if (n < 0) return;
 
-	double **P = new double*[n + 1];
-	for (int i = 0; i <= n; i++) P[i] = new double[n + 1];
-	double factor = -sqrt(1.0 - pow(x,2));
-
-	// Init legendre
-	P[0][0] = 1.0;        // P_0,0(x) = 1
 	if (n == 0)
 	{
-		Y[0] = P[0][0];
+		Y[0] = 1.0;
 		return;
 	}
 
-	// Easy values
-	P[1][0] = x;      // P_1,0(x) = x
-	P[1][1] = factor;     // P_1,1(x) = −sqrt(1 − x^2)
+	double factor = -sqrt(1.0 - x * x);
 	if (n == 1)
 	{
-		Y[0] = P[1][0];
-		Y[1] = P[1][1];
+		Y[0] = x;
+		Y[1] = factor;
 		return;
 	}
+
+	double **P = new double*[n + 1];
+	for (int i = 0; i <= n; i++) P[i] = new double[n + 1];
+	P[0][0] = 1.0;		// P_0,0(x) = 1
+	P[1][0] = x;		// P_1,0(x) = x
+	P[1][1] = factor;	// P_1,1(x) = −sqrt(1 − x^2)
 
 	for (int l = 2; l <= n; l++)
 	{
@@ -1296,9 +1292,9 @@ void Series::legendre(int n, double x, double *Y)
 			P[l][m] = ((double)(2 * l - 1) * x * P[l - 1][m] - (double)(l + m - 1) * P[l - 2][m]) / (double)(l - m);
 		}
 		// P_l,l-1 = (2l-1)*x*P_l-1,l-1
-		P[l][l-1] = (double)(2 * l - 1) * x * P[l-1][l-1];
+		P[l][l - 1] = (double)(2 * l - 1) * x * P[l - 1][l - 1];
 		// P_l,l = (2l-1)*factor*P_l-1,l-1
-		P[l][l] = (double)(2 * l - 1) * factor * P[l-1][l-1];
+		P[l][l] = (double)(2 * l - 1) * factor * P[l - 1][l - 1];
 	}
 
 	for (int i = 0; i <= n; i++) Y[i] = P[n][i];
@@ -1313,16 +1309,13 @@ void Series::legendre2(int n, float x, float *Y, bool schmidt)
 	// source from https://www.mathworks.com/help/matlab/ref/legendre.html
 	if (n < 0) return;
 
-	float factor = sqrt(1.0 - x * x);
-
-	// Init legendre
 	if (n == 0)
 	{
 		Y[0] = 1;
 		return;
 	}
 
-	// Easy values
+	float factor = sqrt(1.0 - x * x);
 	if (n == 1)
 	{
 		Y[0] = x;
@@ -1380,16 +1373,13 @@ void Series::legendre2(int n, double x, double *Y, bool schmidt)
 	// source from https://www.mathworks.com/help/matlab/ref/legendre.html
 	if (n < 0) return;
 
-	double factor = sqrt(1.0 - x * x);
-
-	// Init legendre
 	if (n == 0)
 	{
 		Y[0] = 1;
 		return;
 	}
 
-	// Easy values
+	double factor = sqrt(1.0 - x * x);
 	if (n == 1)
 	{
 		Y[0] = x;
