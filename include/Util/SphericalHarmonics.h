@@ -16,6 +16,6 @@
 class SphericalHarmonics
 {
 public:
-	static void basis(int degree, float *p, float *Y, int from = 0);
-	static void basis(int degree, double *p, double *Y, int from = 0);
+	static void basis(int degree, const float *p, float *Y, int from = 0);
+	static void basis(int degree, const double *p, double *Y, int from = 0);
 };

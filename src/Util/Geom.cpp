@@ -466,7 +466,7 @@ void Coordinate::sph2cart(double phi, double theta, double *v)
 	v[1] = coselev * sin(phi);
 }
 
-void Coordinate::cart2bary(float *a, float *b, float *c, float *p, float *coeff, float err)
+void Coordinate::cart2bary(const float *a, const float *b, const float *c, const float *p, float *coeff, float err)
 {
 	// test dataset for debug
 	/*float a[3] = {-0.6498,0.3743,0.6616};
@@ -539,7 +539,7 @@ void Coordinate::cart2bary(float *a, float *b, float *c, float *p, float *coeff,
 	MathVector PP = A * coeff[0] + B * coeff[1] + C * coeff[2];
 	printf("recons: %f %f %f\n", PP.fv()[0],PP.fv()[1],PP.fv()[2]);*/
 }
-void Coordinate::cart2bary(double *a, double *b, double *c, double *p, double *coeff, double err)
+void Coordinate::cart2bary(const double *a, const double *b, const double *c, const double *p, double *coeff, double err)
 {
 	// a counter clockwise order
 	MathVectorD A(a), B(b), C(c), P(p);
@@ -661,7 +661,7 @@ void Coordinate::rotation(const double *axis, const double theta, double *mat)
 		for (int j = 0; j < 3; j++)
 			mat[i] += A[j + (i / 3) * 3] * A[j * 3 + i % 3] * (1 - cos(theta));
 }
-void Coordinate::rotation2equator(float *v, float *mat, float *pole)
+void Coordinate::rotation2equator(const float *v, float *mat, const float *pole)
 {
 	MathVector p0(pole), axis;
 	float dot;
@@ -831,7 +831,7 @@ void Coordinate::proj2plane(const double a, const double b, const double c, cons
 	p1[1] = p0[1] - b * portion;
 	p1[2] = p0[2] - c * portion;
 }
-float Coordinate::dpoint2tri(const float *t0, const float *t1, const float *t2, float *p0, float *coeff)
+float Coordinate::dpoint2tri(const float *t0, const float *t1, const float *t2, const float *p0, float *coeff)
 {
 	// projection to the triangle
 	float p0_proj[3];
@@ -839,7 +839,7 @@ float Coordinate::dpoint2tri(const float *t0, const float *t1, const float *t2, 
 	Coordinate::proj2plane(N[0], N[1], N[2], -N * MathVector(t0), p0, p0_proj);
 
 	// bary centric
-	Coordinate::cart2bary((float *)t0, (float *)t1, (float *)t2, p0_proj, coeff);
+	Coordinate::cart2bary(t0, t1, t2, p0_proj, coeff);
 
 	// contacting point
 	MathVector P;
@@ -897,7 +897,7 @@ float Coordinate::dpoint2tri(const float *t0, const float *t1, const float *t2, 
 	}
 	return (MathVector(p0) - P).norm();
 }
-float Coordinate::dpoint2tri(const float *t0, const float *t1, const float *t2, float *p0)
+float Coordinate::dpoint2tri(const float *t0, const float *t1, const float *t2, const float *p0)
 {
 	MathVector B(t0), P(p0);
 	MathVector E0 = MathVector(t1) - B;
@@ -1490,35 +1490,35 @@ void Series::legendre2(int n, double x, double *Y, bool schmidt)
 	}
 }
 
-float Statistics::sum(float *A, int n)
+float Statistics::sum(const float *A, int n)
 {
 	float res = 0;
 	for (int i = 0; i < n; i++) res += A[i];
 	return res;
 }
-double Statistics::sum(double *A, int n)
+double Statistics::sum(const double *A, int n)
 {
 	double res = 0;
 	for (int i = 0; i < n; i++) res += A[i];
 	return res;
 }
-float Statistics::mean(float *A, int n)
+float Statistics::mean(const float *A, int n)
 {
 	return sum(A, n) / (float)n;
 }
-double Statistics::mean(double *A, int n)
+double Statistics::mean(const double *A, int n)
 {
 	return sum(A, n) / (double)n;
 }
 
-float Statistics::min(float *A, int n)
+float Statistics::min(const float *A, int n)
 {
 	float res = A[0];
 	for (int i = 1; i < n; i++)
 		if (res > A[i]) res = A[i];
 	return res;
 }
-double Statistics::min(double *A, int n)
+double Statistics::min(const double *A, int n)
 {
 	double res = A[0];
 	for (int i = 1; i < n; i++)
@@ -1526,45 +1526,45 @@ double Statistics::min(double *A, int n)
 	return res;
 }
 
-float Statistics::max(float *A, int n)
+float Statistics::max(const float *A, int n)
 {
 	float res = A[0];
 	for (int i = 1; i < n; i++)
 		if (res < A[i]) res = A[i];
 	return res;
 }
-double Statistics::max(double *A, int n)
+double Statistics::max(const double *A, int n)
 {
 	double res = A[0];
 	for (int i = 1; i < n; i++)
 		if (res < A[i]) res = A[i];
 	return res;
 }
-void Statistics::sum(float *A, int n, int dim, float *res)
+void Statistics::sum(const float *A, int n, int dim, float *res)
 {
 	for (int i = 0; i < n; i++)
 		for (int j = 0; j < dim; j++)
 			res[j] += A[i * dim + j];
 }
-void Statistics::sum(double *A, int n, int dim, double *res)
+void Statistics::sum(const double *A, int n, int dim, double *res)
 {
 	for (int i = 0; i < n; i++)
 		for (int j = 0; j < dim; j++)
 			res[j] += A[i * dim + j];
 }
-void Statistics::mean(float *A, int n, int dim, float *res)
+void Statistics::mean(const float *A, int n, int dim, float *res)
 {
 	sum(A, n, dim, res);
 	for (int i = 0; i < dim; i++)
 		res[i] /= (float)n;
 }
-void Statistics::mean(double *A, int n, int dim, double *res)
+void Statistics::mean(const double *A, int n, int dim, double *res)
 {
 	sum(A, n, dim, res);
 	for (int i = 0; i < dim; i++)
 		res[i] /= (double)n;
 }
-float Statistics::correlation(float *A, float *B, int n)
+float Statistics::correlation(const float *A, const float *B, int n)
 {
 	float res = 0;
 	float meanA = mean(A, n);
@@ -1575,23 +1575,23 @@ float Statistics::correlation(float *A, float *B, int n)
 
 	return res;
 }
-float Statistics::var(float *A, int n)
+float Statistics::var(const float *A, int n)
 {
 	float m = mean(A, n);
 	float res = 0;
 	for (int i = 0; i < n; i++) res += (A[i] - m) * (A[i] - m) / n;
 	return res;
 }
-double Statistics::var(double *A, int n)
+double Statistics::var(const double *A, int n)
 {
 	double m = mean(A, n);
 	double res = 0;
 	for (int i = 0; i < n; i++) res += (A[i] - m) * (A[i] - m) / n;
 	return res;
 }
-void Statistics::cov(float *p, int n, int dim, float *M)
+void Statistics::cov(const float *p, int n, int dim, float *M)
 {
-	float *x;
+	const float *x;
 	float *m = new float[dim];
 
 	memset(m, 0, sizeof(float) * dim);
@@ -1615,9 +1615,9 @@ void Statistics::cov(float *p, int n, int dim, float *M)
 
 	delete m;
 }
-void Statistics::cov_trans(float *p, int n, int dim, float *M)
+void Statistics::cov_trans(const float *p, int n, int dim, float *M)
 {
-	float *x, *y;
+	const float *x, *y;
 	float *m = new float[dim];
 
 	memset(m, 0, sizeof(float) * dim);
@@ -1642,9 +1642,9 @@ void Statistics::cov_trans(float *p, int n, int dim, float *M)
 
 	delete m;
 }
-void Statistics::wcov_trans(float *p, int n, int dim, float *M, float *w)
+void Statistics::wcov_trans(const float *p, int n, int dim, float *M, const float *w)
 {
-	float *x, *y;
+	const float *x, *y;
 	float *m = new float[dim];
 
 	memset(m, 0, sizeof(float) * dim);
@@ -1669,9 +1669,9 @@ void Statistics::wcov_trans(float *p, int n, int dim, float *M, float *w)
 
 	delete m;
 }
-void Statistics::wcov_trans(double *p, int n, int dim, double *M, double *w)
+void Statistics::wcov_trans(const double *p, int n, int dim, double *M, const double *w)
 {
-	double *x, *y;
+	const double *x, *y;
 	double *m = new double[dim];
 
 	memset(m, 0, sizeof(double) * dim);
@@ -1696,15 +1696,15 @@ void Statistics::wcov_trans(double *p, int n, int dim, double *M, double *w)
 
 	delete m;
 }
-float Statistics::NCC(float *A, float *B, int n)
+float Statistics::NCC(const float *A, const float *B, int n)
 {
 	return correlation(A, B, n) / sqrt(correlation(A, A, n)) / sqrt(correlation(B, B, n));
 }
-float Statistics::normal_pdf(float x, float u, float sigma)
+float Statistics::normal_pdf(const float x, const float u, float sigma)
 {
 	return exp( -1 * (x - u) * (x - u) / (2 * sigma * sigma)) / (sigma * sqrt(2 * PI));
 }
-float Statistics::normal_cdf_approx(float x, float u, float sigma)
+float Statistics::normal_cdf_approx(const float x, const float u, float sigma)
 {
 	const double ninf = u - 10 * sigma;
 	double sum = 0;
@@ -1734,7 +1734,7 @@ float Statistics::normal_cdf(float x, float u, float sigma)
 {
 	return 0.5 * (1 + erf((x - u) / (sigma * sqrt(2.))));
 }
-float Statistics::median(float *v, int n)
+float Statistics::median(const float *v, int n)
 {
 	// copy to tmp
 	float *tmp = new float[n];
@@ -1750,7 +1750,7 @@ float Statistics::median(float *v, int n)
 
 	return med;
 }
-double Statistics::median(double *v, int n)
+double Statistics::median(const double *v, int n)
 {
 	// copy to tmp
 	double *tmp = new double[n];

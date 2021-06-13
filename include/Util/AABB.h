@@ -2,12 +2,12 @@
 *	AABB.h
 *
 *	Release: July 2011
-*	Update: June 2020
+*	Update: June 2021
 *
-*	University of North Carolina at Chapel Hill
-*	Department of Computer Science
+*	Ulsan National Institute of Science and Technology
+*	Department of Computer Science and Engineering
 *	
-*	Ilwoo Lyu, ilwoolyu@cs.unc.edu
+*	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
 #include <vector>
@@ -38,7 +38,7 @@ public:
 	AABB(void);
 	AABB(const Mesh *mesh);
 	~AABB(void);
-	int closestFace(float *v, float *coeff, float range = 0, float maxdist = 0);
+	int closestFace(const float *v, float *coeff, float range = 0, float maxdist = 0);
 	void update();
 	void searchTree(const float *p, vector<int> *cand, float eps = 0);
 

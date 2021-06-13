@@ -2,12 +2,12 @@
 *	AABB_Sphere.cpp
 *
 *	Release: March 2017
-*	Update: June 2020
+*	Update: June 2021
 *
-*	Vanderbilt University
-*	Electrical Engineering and Computer Science
+*	Ulsan National Institute of Science and Technology
+*	Department of Computer Science and Engineering
 *	
-*	Ilwoo Lyu, ilwoo.lyu@vanderbilt.edu
+*	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
 #include <stdio.h>
@@ -35,7 +35,7 @@ AABB_Sphere::~AABB_Sphere(void)
 	deleteTree(m_tree);
 	delete [] m_visited;
 }
-int AABB_Sphere::closestFace(float *v, float *coeff)
+int AABB_Sphere::closestFace(const float *v, float *coeff)
 {
 	memset(m_visited, 0, m_mesh->nFace() * sizeof(bool));
 	vector<int> xcand;
@@ -59,7 +59,7 @@ int AABB_Sphere::closestFace(float *v, float *coeff)
 	}
 	return index;
 }
-int AABB_Sphere::closestFaceBool(float *v, float *coeff, bool *xcand, const float eps1, const float eps2)
+int AABB_Sphere::closestFaceBool(const float *v, float *coeff, bool *xcand, const float eps1, const float eps2)
 {
 	int index = -1;
 
@@ -96,7 +96,7 @@ int AABB_Sphere::closestFaceBool(float *v, float *coeff, bool *xcand, const floa
 		Vector N = Vector(a, b).cross(Vector(b, c)).unit();
 		V_proj = Vector(v) * ((Vector(a) * N) / (Vector(v) * N));	// scaling a query vector
 		
-		Coordinate::cart2bary((float *)a, (float *)b, (float *)c, (float *)V_proj.fv(), tcoeff);
+		Coordinate::cart2bary(a, b, c, V_proj.fv(), tcoeff);
 		if (tcoeff[0] >= eps && tcoeff[1] >= eps && tcoeff[2] >= eps)
 		{
 			// closest distance
@@ -161,7 +161,7 @@ int AABB_Sphere::closestFaceBool(float *v, float *coeff, bool *xcand, const floa
 	
 	return index;
 }
-int AABB_Sphere::closestFace(float *v, float *coeff, vector<int> &xcand, const float eps1, const float eps2)
+int AABB_Sphere::closestFace(const float *v, float *coeff, vector<int> &xcand, const float eps1, const float eps2)
 {
 	int index = -1;
 

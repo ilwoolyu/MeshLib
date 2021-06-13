@@ -2,12 +2,12 @@
 *	AABB.cpp
 *
 *	Release: July 2011
-*	Update: June 2020
+*	Update: June 2021
 *
-*	University of North Carolina at Chapel Hill
-*	Department of Computer Science
+*	Ulsan National Institute of Science and Technology
+*	Department of Computer Science and Engineering
 *	
-*	Ilwoo Lyu, ilwoolyu@cs.unc.edu
+*	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
 #include <stdio.h>
@@ -36,7 +36,7 @@ AABB::~AABB(void)
 	deleteTree(m_tree);
 	delete [] m_visited;
 }
-int AABB::closestFace(float *v, float *coeff, float range, float maxdist)
+int AABB::closestFace(const float *v, float *coeff, float range, float maxdist)
 {
 	float err = 0; // numerical error
 	int index = -1;

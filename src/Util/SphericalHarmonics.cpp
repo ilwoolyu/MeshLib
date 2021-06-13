@@ -13,7 +13,7 @@
 #include <cmath>
 #include "SphericalHarmonics.h"
 
-void SphericalHarmonics::basis(int degree, float *p, float *Y, int from)
+void SphericalHarmonics::basis(int degree, const float *p, float *Y, int from)
 {
 	// real spherical harmonics basis functions
 	// polar coordinate
@@ -65,7 +65,7 @@ void SphericalHarmonics::basis(int degree, float *p, float *Y, int from)
 	delete [] Pm;
 }
 
-void SphericalHarmonics::basis(int degree, double *p, double *Y, int from)
+void SphericalHarmonics::basis(int degree, const double *p, double *Y, int from)
 {
 	// real spherical harmonics basis functions
 	// polar coordinate
