@@ -1385,22 +1385,47 @@ void Series::legendre2(int n, float x, float *Y, bool schmidt)
 	for (int i = 0; i < 2 * n + 1; i++) rootn[i] = sqrt(i);
 	float twocot = (factor == 0) ? 0: -2 * x / factor;
 	float sn = pow(-factor, n);
+	memset(Y, 0, sizeof(float) * (n + 1));
+
+	float tol = 1.0842022e-19;
+	if (factor > 0 && fabs(sn) <= tol)
+	{
+		// Approx solution of x*ln(x) = y
+		float v = 9.2 - log(tol) / (n * factor);
+		float w = 1 / log(v);
+		float m1 = 1 + n * factor * v * w * (1.0058 + w * (3.819 - w * 12.173));
+
+		int mm1 = std::min(n, (int)floor(m1));
+		for (int i = mm1 - 1; i <= n+1; i++)
+			Y[i] = 0;
+
+		// Start recursion with proper sign
+		float tstart = 1.1920929e-07;
+		Y[mm1 - 1] = (x < 0) ? (int)((n + 1) % 2 - 0.5 > 0) * 2 - 1: (int)(mm1 % 2 - 0.5 > 0) * 2 - 1;
+		Y[mm1 - 1] *= tstart;
+
+		// Recur from m1 to m = 0, accumulating normalizing factor.
+		float sumsq = tol;
+		for (int m = mm1 - 2; m >= 0; m--)
+		{
+			Y[m] = ((m + 1) * twocot * Y[m + 1] - rootn[n + m + 2] * rootn[n - m - 1] * Y[m + 2]) / (rootn[n + m + 1] * rootn[n - m]);
+			sumsq += Y[m] * Y[m];
+		}
+		float scale = 1 / sqrt(2 * sumsq - Y[0] * Y[0]);
+		for (int i = 0; i <= mm1; i++)
+			Y[i] *= scale;
+	}
 
 	float c = 1;
 	for (int i = 1; i <= n; i++)
 		c *= (1.0 - 1.0 / (i * 2));
-	if (x != 1 && fabs(sn) > 0)
+	if (x != 1 && fabs(sn) >= tol)
 	{
 		Y[n] = sqrt(c) * sn;
 		Y[n - 1] = Y[n] * twocot * n / rootn[2 * n];
 
 		for (int m = n - 2; m >= 0; m--)
 			Y[m] = (Y[m + 1] * twocot * (m + 1) - Y[m + 2] * rootn[n + m + 2] * rootn[n - m - 1]) / (rootn[n + m + 1] * rootn[n - m]);
-	}
-	else
-	{
-		for (int m = 1; m <= n; m++)
-			Y[m] = 0;
 	}
 
 	if (factor == 0)
@@ -1449,22 +1474,47 @@ void Series::legendre2(int n, double x, double *Y, bool schmidt)
 	for (int i = 0; i < 2 * n + 1; i++) rootn[i] = sqrt(i);
 	double twocot = (factor == 0) ? 0: -2 * x / factor;
 	double sn = pow(-factor, n);
+	memset(Y, 0, sizeof(double) * (n + 1));
+
+	double tol = 1.491668146240041e-154;
+	if (factor > 0 && fabs(sn) <= tol)
+	{
+		// Approx solution of x*ln(x) = y
+		double v = 9.2 - log(tol) / (n * factor);
+		double w = 1 / log(v);
+		double m1 = 1 + n * factor * v * w * (1.0058 + w * (3.819 - w * 12.173));
+
+		int mm1 = std::min(n, (int)floor(m1));
+		for (int i = mm1 - 1; i <= n+1; i++)
+			Y[i] = 0;
+
+		// Start recursion with proper sign
+		double tstart = 2.22044604925031308e-16;
+		Y[mm1 - 1] = (x < 0) ? (int)((n + 1) % 2 - 0.5 > 0) * 2 - 1: (int)(mm1 % 2 - 0.5 > 0) * 2 - 1;
+		Y[mm1 - 1] *= tstart;
+
+		// Recur from m1 to m = 0, accumulating normalizing factor.
+		double sumsq = tol;
+		for (int m = mm1 - 2; m >= 0; m--)
+		{
+			Y[m] = ((m + 1) * twocot * Y[m + 1] - rootn[n + m + 2] * rootn[n - m - 1] * Y[m + 2]) / (rootn[n + m + 1] * rootn[n - m]);
+			sumsq += Y[m] * Y[m];
+		}
+		double scale = 1 / sqrt(2 * sumsq - Y[0] * Y[0]);
+		for (int i = 0; i <= mm1; i++)
+			Y[i] *= scale;
+	}
 
 	double c = 1;
 	for (int i = 1; i <= n; i++)
 		c *= (1.0 - 1.0 / (i * 2));
-	if (x != 1 && fabs(sn) > 0)
+	if (x != 1 && fabs(sn) >= tol)
 	{
 		Y[n] = sqrt(c) * sn;
 		Y[n - 1] = Y[n] * twocot * n / rootn[2 * n];
 
 		for (int m = n - 2; m >= 0; m--)
 			Y[m] = (Y[m + 1] * twocot * (m + 1) - Y[m + 2] * rootn[n + m + 2] * rootn[n - m - 1]) / (rootn[n + m + 1] * rootn[n - m]);
-	}
-	else
-	{
-		for (int m = 1; m <= n; m++)
-			Y[m] = 0;
 	}
 
 	if (factor == 0)
