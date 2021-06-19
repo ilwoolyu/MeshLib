@@ -1377,12 +1377,12 @@ void Series::legendre2(int n, float x, float *Y, bool schmidt)
 	if (n == 1)
 	{
 		Y[0] = x;
-		Y[1] = -factor;
+		Y[1] = (schmidt) ? factor: -factor;
 		return;
 	}
 
 	float *rootn = new float[2 * n + 1];
-	for (int i = 0; i < 2 * n + 1; i++) rootn[i] = sqrt(i);
+	for (int i = 0; i < 2 * n + 1; i++) rootn[i] = sqrt((float)i);
 	float twocot = (factor == 0) ? 0: -2 * x / factor;
 	float sn = pow(-factor, n);
 	memset(Y, 0, sizeof(float) * (n + 1));
@@ -1396,13 +1396,11 @@ void Series::legendre2(int n, float x, float *Y, bool schmidt)
 		float m1 = 1 + n * factor * v * w * (1.0058 + w * (3.819 - w * 12.173));
 
 		int mm1 = std::min(n, (int)floor(m1));
-		for (int i = mm1 - 1; i < n + 1; i++)
-			Y[i] = 0;
 
 		// Start recursion with proper sign
 		const float tstart = 1.1920929e-07;
-		Y[mm1 - 1] = (x < 0) ? (int)((n + 1) % 2 - 0.5 > 0) * 2 - 1: (int)(mm1 % 2 - 0.5 > 0) * 2 - 1;
-		Y[mm1 - 1] *= tstart;
+		Y[mm1 - 1] = (x < 0) ? (n + 1) % 2: mm1 % 2;
+		Y[mm1 - 1] = (Y[mm1 - 1] == 0) ? -tstart: tstart;
 
 		// Recur from m1 to m = 0, accumulating normalizing factor.
 		float sumsq = tol;
@@ -1411,16 +1409,16 @@ void Series::legendre2(int n, float x, float *Y, bool schmidt)
 			Y[m] = ((m + 1) * twocot * Y[m + 1] - rootn[n + m + 2] * rootn[n - m - 1] * Y[m + 2]) / (rootn[n + m + 1] * rootn[n - m]);
 			sumsq += Y[m] * Y[m];
 		}
-		float scale = 1 / sqrt(2 * sumsq - Y[0] * Y[0]);
+		float scale = 1 / sqrt(2.0f * sumsq - Y[0] * Y[0]);
 		for (int i = 0; i <= mm1; i++)
 			Y[i] *= scale;
 	}
 
-	float c = 1;
-	for (int i = 1; i < n + 1; i++)
-		c *= (1.0 - 1.0 / (i * 2));
 	if (x != 1 && fabs(sn) >= tol)
 	{
+		float c = 1;
+		for (int i = 1; i < n + 1; i++)
+			c *= (1.0 - 1.0 / (i * 2));
 		Y[n] = sqrt(c) * sn;
 		Y[n - 1] = Y[n] * twocot * n / rootn[2 * n];
 
@@ -1441,14 +1439,14 @@ void Series::legendre2(int n, float x, float *Y, bool schmidt)
 	}
 	else
 	{
-		float sqr2 = sqrt(2);
 		float const1 = -1;
 		for (int j = 1; j < n + 1; j++)
 		{
-			Y[j] *= sqr2 * const1;
+			Y[j] *= rootn[2] * const1;
 			const1 *= -1;
 		}
 	}
+	delete [] rootn;
 }
 
 void Series::legendre2(int n, double x, double *Y, bool schmidt)
@@ -1466,12 +1464,12 @@ void Series::legendre2(int n, double x, double *Y, bool schmidt)
 	if (n == 1)
 	{
 		Y[0] = x;
-		Y[1] = -factor;
+		Y[1] = (schmidt) ? factor: -factor;
 		return;
 	}
 
 	double *rootn = new double[2 * n + 1];
-	for (int i = 0; i < 2 * n + 1; i++) rootn[i] = sqrt(i);
+	for (int i = 0; i < 2 * n + 1; i++) rootn[i] = sqrt((double)i);
 	double twocot = (factor == 0) ? 0: -2 * x / factor;
 	double sn = pow(-factor, n);
 	memset(Y, 0, sizeof(double) * (n + 1));
@@ -1485,13 +1483,11 @@ void Series::legendre2(int n, double x, double *Y, bool schmidt)
 		double m1 = 1 + n * factor * v * w * (1.0058 + w * (3.819 - w * 12.173));
 
 		int mm1 = std::min(n, (int)floor(m1));
-		for (int i = mm1 - 1; i < n + 1; i++)
-			Y[i] = 0;
 
 		// Start recursion with proper sign
 		const double tstart = 2.22044604925031308e-16;
-		Y[mm1 - 1] = (x < 0) ? (int)((n + 1) % 2 - 0.5 > 0) * 2 - 1: (int)(mm1 % 2 - 0.5 > 0) * 2 - 1;
-		Y[mm1 - 1] *= tstart;
+		Y[mm1 - 1] = (x < 0) ? (n + 1) % 2: mm1 % 2;
+		Y[mm1 - 1] = (Y[mm1 - 1] == 0) ? -tstart: tstart;
 
 		// Recur from m1 to m = 0, accumulating normalizing factor.
 		double sumsq = tol;
@@ -1500,16 +1496,16 @@ void Series::legendre2(int n, double x, double *Y, bool schmidt)
 			Y[m] = ((m + 1) * twocot * Y[m + 1] - rootn[n + m + 2] * rootn[n - m - 1] * Y[m + 2]) / (rootn[n + m + 1] * rootn[n - m]);
 			sumsq += Y[m] * Y[m];
 		}
-		double scale = 1 / sqrt(2 * sumsq - Y[0] * Y[0]);
+		double scale = 1 / sqrt(2.0 * sumsq - Y[0] * Y[0]);
 		for (int i = 0; i <= mm1; i++)
 			Y[i] *= scale;
 	}
 
-	double c = 1;
-	for (int i = 1; i < n + 1; i++)
-		c *= (1.0 - 1.0 / (i * 2));
 	if (x != 1 && fabs(sn) >= tol)
 	{
+		double c = 1;
+		for (int i = 1; i < n + 1; i++)
+			c *= (1.0 - 1.0 / (i * 2));
 		Y[n] = sqrt(c) * sn;
 		Y[n - 1] = Y[n] * twocot * n / rootn[2 * n];
 
@@ -1530,14 +1526,14 @@ void Series::legendre2(int n, double x, double *Y, bool schmidt)
 	}
 	else
 	{
-		double sqr2 = sqrt(2);
 		double const1 = -1;
 		for (int j = 1; j < n + 1; j++)
 		{
-			Y[j] *= sqr2 * const1;
+			Y[j] *= rootn[2] * const1;
 			const1 *= -1;
 		}
 	}
+	delete [] rootn;
 }
 
 float Statistics::sum(const float *A, int n)

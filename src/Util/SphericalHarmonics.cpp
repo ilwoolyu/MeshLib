@@ -34,7 +34,7 @@ void SphericalHarmonics::basis(int degree, const float *p, float *Y, int from)
 	for (int l = from; l <= degree; l++)
 	{
 		// legendre part
-		bool schmidt = l > 85;
+		bool schmidt = l >= 0;
 		if (!schmidt)
 		{
 			Series::legendre(l, cos(theta), Pm, P, base);
@@ -55,8 +55,8 @@ void SphericalHarmonics::basis(int degree, const float *p, float *Y, int from)
 			double precoeff = (schmidt) ? lconstant: sqr2 * lconstant * sqrt(1.0 / Series::factorial(l + m, l - m + 1));
 
 			if (!schmidt && m % 2 == 1) precoeff = -precoeff;
-			Y[center + m] = (float)(precoeff * Pm[m] * cos(m * phi));
 			Y[center - m] = (float)(precoeff * Pm[m] * sin(m * phi));
+			Y[center + m] = (float)(precoeff * Pm[m] * cos(m * phi));
 		}
 	}
 
@@ -85,7 +85,7 @@ void SphericalHarmonics::basis(int degree, const double *p, double *Y, int from)
 	for (int l = from; l <= degree; l++)
 	{
 		// legendre part
-		bool schmidt = l > 85;
+		bool schmidt = l >= 0;
 		if (!schmidt)
 		{
 			Series::legendre(l, cos(theta), Pm, P, base);
@@ -106,8 +106,8 @@ void SphericalHarmonics::basis(int degree, const double *p, double *Y, int from)
 			double precoeff = (schmidt) ? lconstant: sqr2 * lconstant * sqrt(1.0 / Series::factorial(l + m, l - m + 1));
 
 			if (!schmidt && m % 2 == 1) precoeff = -precoeff;
-			Y[center + m] = precoeff * Pm[m] * cos(m * phi);
 			Y[center - m] = precoeff * Pm[m] * sin(m * phi);
+			Y[center + m] = precoeff * Pm[m] * cos(m * phi);
 		}
 	}
 
