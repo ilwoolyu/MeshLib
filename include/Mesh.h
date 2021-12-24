@@ -2,12 +2,12 @@
 *	Mesh.h
 *
 *	Release: July 2011
-*	Update: Sep 2016
+*	Update: Dec 2021
 *
-*	University of North Carolina at Chapel Hill
-*	Department of Computer Science
+*	Ulsan National Institute of Science and Technology
+*	Department of Computer Science and Engineering
 *	
-*	Ilwoo Lyu, ilwoolyu@cs.unc.edu
+*	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
 #pragma once
@@ -110,12 +110,13 @@ public:
 	int list(const int index) const;
 	const Vertex *vertex(const int index) const;
 	const Normal *normal(const int index) const;
-	const Normal faceNormal(void) const;
+	const Normal &faceNormal(void) const;
 	int operator[] (const int id) const;
 
 private:
 	Vertex *m_vertex[3];
 	Normal *m_normal[3];
+	Normal m_face_normal;
 	int m_list[3];
 	int m_id;
 };

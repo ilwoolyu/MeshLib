@@ -2,7 +2,7 @@
 *	Geom.cpp
 *
 *	Release: July 2011
-*	Update: June 2021
+*	Update: Dec 2021
 *
 *	Ulsan National Institute of Science and Technology
 *	Department of Computer Science and Engineering
@@ -1916,9 +1916,9 @@ void LinearAlgebra::eig3symmetric(const double M[3][3], double lambda[3], double
 			double norm = 0;
 			for (int i = 0; i < 3; i++) norm += eigv[n][i] * eigv[n][i];
 			norm = sqrt(norm);
-			for (int i = 0; i < 3; i++) eigv[n][i] /= norm; 
+			for (int i = 0; i < 3; i++) eigv[n][i] /= norm;
 		}
-		
+
 		delete [] B;
 		delete [] work;
 	}
@@ -2071,17 +2071,29 @@ void LinearAlgebra::echelonEigv(const double **M, int n, double *x)
 	}
 
 	// solution
-	x[n - 1] = 1;	// fix the last elem to 1
-	for (int i = n - 2; i >= 0; i--)
+	float eps = 1e-8;
+	for (int k = n - 1; k >= 0; k--)
 	{
-		x[i] = 0;
-		for (int j = i + 1; j < n; j++)
-			x[i] -= A[i][j] * x[j];
-		x[i] /= A[i][i];
+		if (fabs(A[k][k]) > eps)
+		{
+			x[k] = 1;	// fix the k'th elem to 1
+			for (int i = k - 1; i >= 0; i--)
+			{
+				x[i] = 0;
+				for (int j = i + 1; j < n; j++)
+					x[i] -= A[i][j] * x[j];
+				if (A[i][i] != 0)
+					x[i] /= A[i][i];
+			}
+			break;
+		}
+		else
+		{
+			x[k] = 0;
+		}
 	}
 
 	delete [] A;
 	delete [] work;
 	delete [] tRow;
 }
-

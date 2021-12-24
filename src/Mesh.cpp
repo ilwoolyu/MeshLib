@@ -2,12 +2,12 @@
 *	Mesh.cpp
 *
 *	Release: July 2011
-*	Update: March 2016
+*	Update: Dec 2021
 *
-*	University of North Carolina at Chapel Hill
-*	Department of Computer Science
+*	Ulsan National Institute of Science and Technology
+*	Department of Computer Science and Engineering
 *
-*	Ilwoo Lyu, ilwoolyu@cs.unc.edu
+*	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
 #include "Mesh.h"
@@ -344,6 +344,11 @@ Face::~Face(void)
 void Face::setVertex(const Vertex **v)
 {
 	m_vertex[0] = (Vertex *)v[0]; m_vertex[1] = (Vertex *)v[1]; m_vertex[2] = (Vertex *)v[2];
+	Vector v1(m_vertex[1]->fv(), m_vertex[0]->fv());
+	Vector v2(m_vertex[2]->fv(), m_vertex[1]->fv());
+	Vector v3 = v1.cross(v2);
+	v3.unit();
+	m_face_normal.setNormal(v3.fv());
 }
 
 const Vertex * Face::vertex(const int index) const
@@ -383,14 +388,9 @@ const Normal * Face::normal(const int index) const
 	return m_normal[index];
 }
 
-const Normal Face::faceNormal(void) const
+const Normal & Face::faceNormal(void) const
 {
-	Vector v1(m_vertex[1]->fv(), m_vertex[0]->fv());
-	Vector v2(m_vertex[2]->fv(), m_vertex[1]->fv());
-	Vector v3 = v1.cross(v2);
-	v3.unit();
-	Normal fn(v3.fv());
-	return fn;
+	return m_face_normal;
 }
 
 int Face::id(void)
