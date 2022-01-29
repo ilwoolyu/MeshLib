@@ -92,9 +92,11 @@ int AABB_Sphere::closestFaceBool(const float *v, float *coeff, bool *xcand, cons
 		const float *c = m_mesh->face(cand[i])->vertex(2)->fv();
 
 		// projection of v onto the triangle
-		float v_proj[3];
 		Vector N = Vector(a, b).cross(Vector(b, c)).unit();
-		V_proj = Vector(v) * ((Vector(a) * N) / (Vector(v) * N));	// scaling a query vector
+		float r0 = Vector(a) * N;
+		float r1 = Vector(v) * N;
+		if (r1 < r0 + eps) continue;
+		V_proj = Vector(v) * (r0 / r1);	// scaling a query vector
 		
 		Coordinate::cart2bary(a, b, c, V_proj.fv(), tcoeff);
 		if (tcoeff[0] >= eps && tcoeff[1] >= eps && tcoeff[2] >= eps)
@@ -195,7 +197,6 @@ int AABB_Sphere::closestFace(const float *v, float *coeff, vector<int> &xcand, c
 
 		float tcoeff[3];
 		// projection of v onto the triangle
-		float v_proj[3];
 		Vector N = Vector(a, b).cross(Vector(b, c)).unit();
 		Vector V_proj = Vector(v) * ((Vector(a) * N) / (Vector(v) * N));	// scaling a query vector
 		
