@@ -31,6 +31,15 @@ void SphericalHarmonics::basis(int degree, const float *p, float *Y, int from)
 	P[1] = new double[degree + 1];
 	int base = 0;
 
+	double *s = new double[degree];
+	double *c = new double[degree];
+
+	for (int i = 0; i < degree; i++)
+	{
+		s[i] = sin((i + 1) * phi);
+		c[i] = cos((i + 1) * phi);
+	}
+
 	for (int l = from; l <= degree; l++)
 	{
 		// legendre part
@@ -55,11 +64,13 @@ void SphericalHarmonics::basis(int degree, const float *p, float *Y, int from)
 			double precoeff = (schmidt) ? lconstant: sqr2 * lconstant * sqrt(1.0 / Series::factorial(l + m, l - m + 1));
 
 			if (!schmidt && m % 2 == 1) precoeff = -precoeff;
-			Y[center - m] = (float)(precoeff * Pm[m] * sin(m * phi));
-			Y[center + m] = (float)(precoeff * Pm[m] * cos(m * phi));
+			Y[center - m] = (float)(precoeff * Pm[m] * s[m - 1]);
+			Y[center + m] = (float)(precoeff * Pm[m] * c[m - 1]);
 		}
 	}
 
+	delete [] s;
+	delete [] c;
 	delete [] P[0];
 	delete [] P[1];
 	delete [] Pm;
@@ -81,6 +92,15 @@ void SphericalHarmonics::basis(int degree, const double *p, double *Y, int from)
 	P[0] = new double[degree + 1];
 	P[1] = new double[degree + 1];
 	int base = 0;
+
+	double *s = new double[degree];
+	double *c = new double[degree];
+
+	for (int i = 0; i < degree; i++)
+	{
+		s[i] = sin((i + 1) * phi);
+		c[i] = cos((i + 1) * phi);
+	}
 
 	for (int l = from; l <= degree; l++)
 	{
@@ -106,11 +126,13 @@ void SphericalHarmonics::basis(int degree, const double *p, double *Y, int from)
 			double precoeff = (schmidt) ? lconstant: sqr2 * lconstant * sqrt(1.0 / Series::factorial(l + m, l - m + 1));
 
 			if (!schmidt && m % 2 == 1) precoeff = -precoeff;
-			Y[center - m] = precoeff * Pm[m] * sin(m * phi);
-			Y[center + m] = precoeff * Pm[m] * cos(m * phi);
+			Y[center - m] = precoeff * Pm[m] * s[m - 1];
+			Y[center + m] = precoeff * Pm[m] * c[m - 1];
 		}
 	}
 
+	delete [] s;
+	delete [] c;
 	delete [] P[0];
 	delete [] P[1];
 	delete [] Pm;
