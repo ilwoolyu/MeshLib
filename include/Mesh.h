@@ -2,11 +2,11 @@
 *	Mesh.h
 *
 *	Release: July 2011
-*	Update: Dec 2021
+*	Update: July 2022
 *
 *	Ulsan National Institute of Science and Technology
 *	Department of Computer Science and Engineering
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
@@ -59,7 +59,7 @@ class Vertex
 {
 public:
 	Vertex(void);
-	Vertex(const int id);
+	Vertex(const int id, float *array);
 	~Vertex(void);
 	void setVertex(const float *v);
 	void setList(const int *list, const int n);
@@ -71,17 +71,19 @@ public:
 	const float *fv(void) const;
 
 private:
-	float m_vertex[3];
+	float *m_vertex;
 	int m_id;
 	int *m_list;
 	int m_nNeighbor;
+	bool m_pre_alloc;
 };
 
 class Normal
 {
 public:
 	Normal(void);
-	Normal(const int id);
+	Normal(float *array);
+	Normal(const int id, float *array);
 	Normal(const float *v);
 	~Normal(void);
 	void setNormal(const float *v);
@@ -92,15 +94,16 @@ public:
 	float operator[] (const int id) const;
 
 private:
-	float m_normal[3];
+	float *m_normal;
 	int m_id;
+	bool m_pre_alloc;
 };
 
 class Face
 {
 public:
 	Face(void);
-	Face(const int id);
+	Face(const int id, int *array1, float *array2);
 	~Face(void);
 	void setVertex(const Vertex **v);
 	void setNormal(const Normal **v);
@@ -117,8 +120,9 @@ private:
 	Vertex *m_vertex[3];
 	Normal *m_normal[3];
 	Normal m_face_normal;
-	int m_list[3];
+	int *m_list;
 	int m_id;
+	bool m_pre_alloc;
 };
 
 class Mesh
@@ -147,7 +151,7 @@ public:
 
 private:
 	void connectivity(void);
-	
+
 private:
 	int m_nVertex;
 	int m_nFace;
@@ -155,4 +159,8 @@ private:
 	Vertex **m_vertex;
 	Normal **m_normal;
 	Face **m_face;
+	float *m_vertex_array;
+	float *m_normal_array;
+	float *m_face_normal_array;
+	int *m_face_array;
 };

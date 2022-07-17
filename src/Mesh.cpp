@@ -2,7 +2,7 @@
 *	Mesh.cpp
 *
 *	Release: July 2011
-*	Update: Dec 2021
+*	Update: July 2022
 *
 *	Ulsan National Institute of Science and Technology
 *	Department of Computer Science and Engineering
@@ -205,22 +205,26 @@ bool Vector::operator >(const Vector &v) const
 
 Vertex::Vertex(void)
 {
-	m_vertex[0] = m_vertex[1] = m_vertex[2] = 0;
+	m_pre_alloc = false;
+	m_vertex = new float[3];
 	m_id = 0;
 	m_nNeighbor = 0;
 	m_list = NULL;
 }
 
-Vertex::Vertex(const int id)
+Vertex::Vertex(const int id, float *array)
 {
+	m_pre_alloc = true;
 	m_id = id;
 	m_nNeighbor = 0;
 	m_list = NULL;
+	m_vertex = array;
 }
 
 Vertex::~Vertex(void)
 {
 	delete [] m_list;
+	if (!m_pre_alloc) delete [] m_vertex;
 }
 
 const float * Vertex::fv(void) const
@@ -235,23 +239,69 @@ float Vertex::operator[] (const int id) const
 
 Normal::Normal(void)
 {
-	m_normal[0] = m_normal[1] = m_normal[2] = 0;
+	m_pre_alloc = false;
+	m_normal = new float[3];
 	m_id = 0;
 }
 
-Normal::Normal(const int id)
+Normal::Normal(float *array)
 {
+	m_pre_alloc = true;
+	m_normal = array;
+	m_id = 0;
+}
+
+void Vertex::setVertex(const float *v)
+{
+	m_vertex[0] = v[0]; m_vertex[1] = v[1]; m_vertex[2] = v[2];
+}
+
+void Vertex::setList(const int *list, const int n)
+{
+	m_nNeighbor = n;
+	if (m_list != NULL) delete [] m_list;
+	m_list = new int[n];
+	memcpy(m_list, list, sizeof(int) * n);
+}
+
+int Vertex::id(void) const
+{
+	return m_id;
+}
+
+const int * Vertex::list(void) const
+{
+	return m_list;
+}
+
+int Vertex::list(const int index) const
+{
+	return m_list[index];
+}
+
+int Vertex::nNeighbor(void) const
+{
+	return m_nNeighbor;
+}
+
+Normal::Normal(const int id, float *array)
+{
+	m_pre_alloc = true;
+	m_normal = array;
 	m_normal[0] = m_normal[1] = m_normal[2] = 0;
 	m_id = id;
 }
 
 Normal::Normal(const float *v)
 {
+	m_pre_alloc = false;
+	m_normal = new float[3];
 	setNormal(v);
 }
 
 Normal::~Normal(void)
 {
+	if (!m_pre_alloc) delete [] m_normal;
 }
 
 const float * Normal::fv(void) const
@@ -294,51 +344,24 @@ float Normal::operator[] (const int id) const
 	return m_normal[id];
 }
 
-void Vertex::setVertex(const float *v)
-{
-	m_vertex[0] = v[0]; m_vertex[1] = v[1]; m_vertex[2] = v[2];
-}
-
-void Vertex::setList(const int *list, const int n)
-{
-	m_nNeighbor = n;
-	if (m_list != NULL) delete [] m_list;
-	m_list = new int[n];
-	memcpy(m_list, list, sizeof(int) * n);
-}
-
-int Vertex::id(void) const
-{
-	return m_id;
-}
-
-const int * Vertex::list(void) const
-{
-	return m_list;
-}
-
-int Vertex::list(const int index) const
-{
-	return m_list[index];
-}
-
-int Vertex::nNeighbor(void) const
-{
-	return m_nNeighbor;
-}
-
 Face::Face(void)
 {
+	m_pre_alloc = false;
+	m_list = new int[3];
 	m_id = 0;
 }
 
-Face::Face(const int id)
+Face::Face(const int id, int *array1, float *array2)
 {
+	m_pre_alloc = true;
+	m_list = array1;
+	m_face_normal = Normal(array2);
 	m_id = id;
 }
 
 Face::~Face(void)
 {
+	if (!m_pre_alloc) delete [] m_list;
 }
 
 void Face::setVertex(const Vertex **v)
@@ -403,6 +426,11 @@ Mesh::Mesh(void)
 	m_nVertex = 0;
 	m_nFace = 0;
 	m_nNormal = 0;
+
+	m_vertex_array = NULL;
+	m_normal_array = NULL;
+	m_face_normal_array = NULL;
+	m_face_array = NULL;
 }
 
 Mesh::~Mesh(void)
@@ -413,6 +441,10 @@ Mesh::~Mesh(void)
 	delete [] m_vertex;
 	delete [] m_normal;
 	delete [] m_face;
+	delete [] m_vertex_array;
+	delete [] m_normal_array;
+	delete [] m_face_normal_array;
+	delete [] m_face_array;
 }
 
 const Vertex ** Mesh::vertex(void) const
@@ -538,9 +570,18 @@ void Mesh::setMesh(const float *vertex, const int *face, const float *normal, in
 	m_normal = new Normal*[m_nNormal];
 	m_face = new Face*[m_nFace];
 
-	for (int i = 0; i < m_nVertex; i++) m_vertex[i] = new Vertex(i);
-	for (int i = 0; i < m_nNormal; i++) m_normal[i] = new Normal(i);
-	for (int i = 0; i < m_nFace; i++) m_face[i] = new Face(i);
+	if (m_vertex_array != NULL) delete [] m_vertex_array;
+	if (m_normal_array != NULL) delete [] m_normal_array;
+	if (m_face_normal_array != NULL) delete [] m_face_normal_array;
+	if (m_face_array != NULL) delete [] m_face_array;
+	m_vertex_array = new float[m_nVertex * 3];
+	m_normal_array = new float[m_nNormal * 3];
+	m_face_normal_array = new float[m_nFace * 3];
+	m_face_array = new int[m_nFace * 3];
+
+	for (int i = 0; i < m_nVertex; i++) m_vertex[i] = new Vertex(i, &m_vertex_array[i * 3]);
+	for (int i = 0; i < m_nNormal; i++) m_normal[i] = new Normal(i, &m_normal_array[i * 3]);
+	for (int i = 0; i < m_nFace; i++) m_face[i] = new Face(i, &m_face_array[i * 3], &m_face_normal_array[i * 3]);
 
 	for (int i = 0; i < m_nVertex; i++)
 	{
@@ -616,7 +657,7 @@ void Mesh::openFile(const char *filename)
 	//cout << "Filename: " << filename << endl;
 	if(fin.fail())
 	{
-		cout << "Failure to open " << filename << endl;
+		cout << "Failed to open " << filename << endl;
 		return;
 	}
 	fin.close();
@@ -630,7 +671,7 @@ void Mesh::openFile(const char *filename)
 		cout << "Unsupported format!" << endl;
 		return;
 	}
-	
+
 	setMesh(mesh->vertex(0), mesh->face(0), mesh->normal(0), mesh->nVertex(), mesh->nFace(), mesh->nNormal(), mesh->hasNormal());
 	updateNormal();
 
@@ -685,7 +726,7 @@ void Mesh::saveFile(const char *filename, const char *format, bool normal)
 	}*/
 	else
 	{
-		cout << "Not supoorted format!" << endl;
+		cout << "Unsupported format!" << endl;
 		return;
 	}
 }
