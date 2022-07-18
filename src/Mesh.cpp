@@ -207,6 +207,7 @@ Vertex::Vertex(void)
 {
 	m_pre_alloc = false;
 	m_vertex = new float[3];
+	m_vertex[0] = m_vertex[1] = m_vertex[2] = 0;
 	m_id = 0;
 	m_nNeighbor = 0;
 	m_list = NULL;
@@ -235,20 +236,6 @@ const float * Vertex::fv(void) const
 float Vertex::operator[] (const int id) const
 {
 	return m_vertex[id];
-}
-
-Normal::Normal(void)
-{
-	m_pre_alloc = false;
-	m_normal = new float[3];
-	m_id = 0;
-}
-
-Normal::Normal(float *array)
-{
-	m_pre_alloc = true;
-	m_normal = array;
-	m_id = 0;
 }
 
 void Vertex::setVertex(const float *v)
@@ -282,6 +269,21 @@ int Vertex::list(const int index) const
 int Vertex::nNeighbor(void) const
 {
 	return m_nNeighbor;
+}
+
+Normal::Normal(void)
+{
+	m_pre_alloc = false;
+	m_normal = new float[3];
+	m_normal[0] = m_normal[1] = m_normal[2] = 0;
+	m_id = 0;
+}
+
+Normal::Normal(float *array)
+{
+	m_pre_alloc = true;
+	m_normal = array;
+	m_id = 0;
 }
 
 Normal::Normal(const int id, float *array)
@@ -367,11 +369,7 @@ Face::~Face(void)
 void Face::setVertex(const Vertex **v)
 {
 	m_vertex[0] = (Vertex *)v[0]; m_vertex[1] = (Vertex *)v[1]; m_vertex[2] = (Vertex *)v[2];
-	Vector v1(m_vertex[1]->fv(), m_vertex[0]->fv());
-	Vector v2(m_vertex[2]->fv(), m_vertex[1]->fv());
-	Vector v3 = v1.cross(v2);
-	v3.unit();
-	m_face_normal.setNormal(v3.fv());
+	updateFaceNormal();
 }
 
 const Vertex * Face::vertex(const int index) const
@@ -391,6 +389,14 @@ void Face::setList(const int *list)
 	m_list[2] = list[2];
 }
 
+void Face::updateFaceNormal(void)
+{
+	Vector v1(m_vertex[1]->fv(), m_vertex[0]->fv());
+	Vector v2(m_vertex[2]->fv(), m_vertex[1]->fv());
+	Vector v3 = v1.cross(v2);
+	v3.unit();
+	m_face_normal.setNormal(v3.fv());
+}
 const int *Face::list(void) const
 {
 	return (const int *)m_list;
@@ -709,6 +715,8 @@ void Mesh::updateNormal(void)
 		*m_normal[idx[0]] += fn;
 		*m_normal[idx[1]] += fn;
 		*m_normal[idx[2]] += fn;*/
+
+		m_face[i]->updateFaceNormal();
 	}
 	for (int i = 0; i < m_nNormal; i++) m_normal[i]->normalize();
 }

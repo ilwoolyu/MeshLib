@@ -108,6 +108,7 @@ public:
 	void setVertex(const Vertex **v);
 	void setNormal(const Normal **v);
 	void setList(const int *list);
+	void updateFaceNormal(void);
 	int id(void);
 	const int *list(void) const;
 	int list(const int index) const;

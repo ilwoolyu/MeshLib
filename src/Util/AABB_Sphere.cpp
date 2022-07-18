@@ -2,11 +2,11 @@
 *	AABB_Sphere.cpp
 *
 *	Release: March 2017
-*	Update: June 2021
+*	Update: July 2022
 *
 *	Ulsan National Institute of Science and Technology
 *	Department of Computer Science and Engineering
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
@@ -69,20 +69,19 @@ int AABB_Sphere::closestFaceBool(const float *v, float *coeff, bool *xcand, cons
 	vector<int> cand;
 	searchTree(phi, theta, m_tree, &cand, eps1, eps2);
 	if (phi + 2 * PI <= m_maxPhi) searchTree(phi + 2 * PI, theta, m_tree, &cand, eps1, eps2);
-	
+
 	if (eps1 == 0 && m_pole0 != -1 && m_pole1 != -1)
 	{
 		if (theta >= m_maxTheta) cand.push_back(m_pole0);
 		if (theta <= m_minTheta) cand.push_back(m_pole1);
 	}
 	if (cand.empty()) return -1;
-	
+
 	float min_dist = FLT_MAX;
 	float tcoeff[3];
-	Vector V_proj;
-	
+
 	const float eps = -1e-5;	// allow a numeric error
-	
+
 	for (int i = 0; i < cand.size(); i++)
 	{
 		if (xcand[cand[i]]) continue;
@@ -92,12 +91,12 @@ int AABB_Sphere::closestFaceBool(const float *v, float *coeff, bool *xcand, cons
 		const float *c = m_mesh->face(cand[i])->vertex(2)->fv();
 
 		// projection of v onto the triangle
-		Vector N = Vector(a, b).cross(Vector(b, c)).unit();
+		Vector N = Vector(m_mesh->face(cand[i])->faceNormal().fv());
 		float r0 = Vector(a) * N;
 		float r1 = Vector(v) * N;
 		if (r1 < r0 + eps) continue;
-		V_proj = Vector(v) * (r0 / r1);	// scaling a query vector
-		
+		Vector V_proj = Vector(v) * (r0 / r1);	// scaling a query vector
+
 		Coordinate::cart2bary(a, b, c, V_proj.fv(), tcoeff);
 		if (tcoeff[0] >= eps && tcoeff[1] >= eps && tcoeff[2] >= eps)
 		{
@@ -107,7 +106,7 @@ int AABB_Sphere::closestFaceBool(const float *v, float *coeff, bool *xcand, cons
 			{
 				index = cand[i];
 				min_dist = dist;
-			
+
 				// bary centric
 				coeff[0] = tcoeff[0];
 				coeff[1] = tcoeff[1];
@@ -146,7 +145,7 @@ int AABB_Sphere::closestFaceBool(const float *v, float *coeff, bool *xcand, cons
 			cout << endl;
 		}
 	}*/
-	
+
 	/*if (index != -1)
 	{
 		const float *a = m_mesh->face(index)->vertex(0)->fv();
@@ -157,10 +156,10 @@ int AABB_Sphere::closestFaceBool(const float *v, float *coeff, bool *xcand, cons
 		float v_proj[3];
 		Vector N = Vector(a, b).cross(Vector(b, c)).unit();
 		V_proj = Vector(v) * ((Vector(a) * N) / (Vector(v) * N));	// scaling a query vector
-		
+
 		Coordinate::cart2bary((float *)a, (float *)b, (float *)c, (float *)V_proj.fv(), coeff, 1e-5);
 	}*/
-	
+
 	return index;
 }
 int AABB_Sphere::closestFace(const float *v, float *coeff, vector<int> &xcand, const float eps1, const float eps2)
@@ -169,11 +168,11 @@ int AABB_Sphere::closestFace(const float *v, float *coeff, vector<int> &xcand, c
 
 	float phi, theta;
 	Coordinate::cart2sph(v, &phi, &theta);
-	
+
 	vector<int> cand_all;
 	searchTree(phi, theta, m_tree, &cand_all, eps1, eps2);
 	if (phi + 2 * PI <= m_maxPhi) searchTree(phi + 2 * PI, theta, m_tree, &cand_all, eps1, eps2);
-	
+
 	/*if (eps1 == 0 && m_pole0 != -1 && m_pole1 != -1)
 	{
 		if (theta >= m_maxTheta) cand_all.push_back(m_pole0);
@@ -188,6 +187,8 @@ int AABB_Sphere::closestFace(const float *v, float *coeff, vector<int> &xcand, c
 	vector<int> cand;	// only consider unseen triangles
 	set_difference(cand_all.begin(), cand_all.end(), xcand.begin(), xcand.end(), inserter(cand, cand.begin()));
 
+	const float eps = -1e-5;	// allow a numeric error
+
 	float min_dist = FLT_MAX;
 	for (int i = 0; i < cand.size(); i++)
 	{
@@ -196,12 +197,14 @@ int AABB_Sphere::closestFace(const float *v, float *coeff, vector<int> &xcand, c
 		const float *c = m_mesh->face(cand[i])->vertex(2)->fv();
 
 		float tcoeff[3];
-		// projection of v onto the triangle
-		Vector N = Vector(a, b).cross(Vector(b, c)).unit();
-		Vector V_proj = Vector(v) * ((Vector(a) * N) / (Vector(v) * N));	// scaling a query vector
-		
+
+		Vector N = Vector(m_mesh->face(cand[i])->faceNormal().fv());
+		float r0 = Vector(a) * N;
+		float r1 = Vector(v) * N;
+		if (r1 < r0 + eps) continue;
+		Vector V_proj = Vector(v) * (r0 / r1);	// scaling a query vector
+
 		Coordinate::cart2bary((float *)a, (float *)b, (float *)c, (float *)V_proj.fv(), tcoeff);
-		const float eps = -1e-5;	// allow a numeric error
 		if (tcoeff[0] >= eps && tcoeff[1] >= eps && tcoeff[2] >= eps)
 		{
 			// closest distance
@@ -210,7 +213,7 @@ int AABB_Sphere::closestFace(const float *v, float *coeff, vector<int> &xcand, c
 			{
 				index = cand[i];
 				min_dist = dist;
-			
+
 				// bary centric
 				coeff[0] = tcoeff[0];
 				coeff[1] = tcoeff[1];
@@ -219,7 +222,7 @@ int AABB_Sphere::closestFace(const float *v, float *coeff, vector<int> &xcand, c
 		}
 	}
 	xcand.insert(xcand.end(), cand.begin(), cand.end());
-	
+
 	return index;
 }
 void AABB_Sphere::update()
@@ -293,7 +296,7 @@ void AABB_Sphere::searchTree(const float *p, vector<int> *cand, const float eps1
 }
 void AABB_Sphere::searchTree(const float phi, const float theta, node *root, vector<int> *cand, const float eps1, const float eps2)
 {
-	if (root->left != NULL && 
+	if (root->left != NULL &&
 		phi >= root->left->phi0 - eps1 && theta >= root->left->theta0 - eps2 &&
 		phi <= root->left->phi1 + eps1 && theta <= root->left->theta1 + eps2)
 		searchTree(phi, theta, root->left, cand, eps1, eps2);
@@ -336,7 +339,7 @@ AABB_Sphere::node *AABB_Sphere::construction(const vector<float *> range, const 
 		right.push_back(cand[1]);
 		elem->left = construction(lrange, left);
 		elem->right = construction(rrange, right);
-		
+
 		return elem;
 	}
 	else
@@ -540,7 +543,7 @@ void AABB_Sphere::updateTree(node *root)
 {
 	if (root->left != NULL) updateTree(root->left);
 	if (root->right != NULL) updateTree(root->right);
-	
+
 	m_maxPhi = 2 * PI;
 	boundingBox(root);
 }
@@ -551,4 +554,3 @@ void AABB_Sphere::deleteTree(node *root)
 
 	delete root;
 }
-
