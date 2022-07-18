@@ -6,7 +6,7 @@
 *
 *	Ulsan National Institute of Science and Technology
 *	Department of Computer Science and Engineering
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
@@ -550,7 +550,7 @@ void Coordinate::cart2bary(const double *a, const double *b, const double *c, co
 	coeff[0] = (B-P).cross(C-P) * N / ABC;
 	coeff[1] = (C-P).cross(A-P) * N / ABC;
 	coeff[2] = 1 - coeff[0] - coeff[1];
-	
+
 	if (fabs(coeff[0]) < err)
 	{
 		coeff[0] = 0;
@@ -729,7 +729,7 @@ int Coordinate::intersection(const float *t0, const float *t1, const float *t2, 
 	float ait0 = fabs(it0 + d);
 	float ait1 = fabs(it1 + d);
 	float ait2 = fabs(it2 + d);
-	
+
 	// face
 	if (ait0 <= eps && ait1 <= eps && ait2 <= eps)
 	{
@@ -1073,7 +1073,7 @@ float Coordinate::dpoint2tri(const float *t0, const float *t1, const float *t2, 
 		{
 			if (t < 0)
 			{
-				// region6 
+				// region6
 				float tmp0 = b + e;
 				float tmp1 = a + d;
 				if (tmp1 > tmp0)
@@ -1961,8 +1961,8 @@ double LinearAlgebra::trace3(const double M[3][3])
 }
 double LinearAlgebra::det3(const double M[3][3])
 {
-	return M[0][0] * (M[1][1] * M[2][2] - M[1][2] * M[2][1]) - 
-			M[0][1] * (M[1][0] * M[2][2] - M[1][2] * M[2][0]) + 
+	return M[0][0] * (M[1][1] * M[2][2] - M[1][2] * M[2][1]) -
+			M[0][1] * (M[1][0] * M[2][2] - M[1][2] * M[2][0]) +
 			M[0][2] * (M[1][0] * M[2][1] - M[1][1] * M[2][0]);
 }
 void LinearAlgebra::gaussElim(const double **M, int n, double *x)
@@ -2038,7 +2038,7 @@ void LinearAlgebra::echelonEigv(const double **M, int n, double *x)
 		for (int j = 0; j < n; j++)
 			A[i][j] = M[i][j];
 	}
-	
+
 	for (int i = 0; i < n - 2; i++)	// row
 	{
 		// maximum pivot

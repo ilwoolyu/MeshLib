@@ -6,7 +6,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -45,12 +45,12 @@ public:
 	const int *source(void);
 	const double *area(void);
 	int niter(void);
-	
+
 private:
 	const double * V1Callback(GW_GeodesicVertex& Vert1);
 	double Lam1Callback(GW_GeodesicVertex& Vert1);
 	double Lam2Callback(GW_GeodesicVertex& Vert1);
-	
+
 	GW_Float WeightCallback(GW_GeodesicVertex& Vert1, GW_Vector3D& Vert2);
 	GW_Bool StopMarchingCallback(GW_GeodesicVertex& Vert);
 	GW_Bool InsersionCallback(GW_GeodesicVertex& Vert, GW_Float rNewDist);
@@ -60,11 +60,11 @@ private:
 	double vertexArea(const Mesh *mesh, int id);
 
 private:
-	int nverts; 
+	int nverts;
 	int nfaces;
 	int nstart, nend;
 	int niter_max;
-	double dmax;	
+	double dmax;
 	const int *start_points, *end_points;
 	const double *Ww, *H, *L, *values;
 	double **T, *pT;
@@ -73,16 +73,16 @@ private:
 	double *m_cmax;
 	double **m_umin;
 	double **m_umax;
-	
+
 	// metric tensor
 	double **V1;
 	double *V1_;
 	double *Lam1, *Lam2;
-	
+
 	bool *exc;	// excluded points
 	double *varea;	// vertex area
 
-	// outputs 
+	// outputs
 	double *D;	// distance
 	int *S;	// state
 	int *Q;	// nearest neighbor

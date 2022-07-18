@@ -116,7 +116,7 @@ void GeodesicPath::computeGeodesicPath(int x)
 
 		Vector u = Vector(m_mesh->vertex(k)->fv(), m_mesh->vertex(i)->fv());
 		Vector v = Vector(m_mesh->vertex(k)->fv(), m_mesh->vertex(j)->fv());
-		
+
 		double det = (u * u) * (v * v) - (u * v) * (u * v);
 		double Ainv[2][2] = { {(v * v) / det, -(u * v) / det },{ -(u * v) / det, (u * u) / det } };
 		double nx = Ainv[0][0] * (a - c) + Ainv[0][1] * (b - c);
@@ -154,7 +154,7 @@ void GeodesicPath::computeGeodesicPath(int x)
 		q[1] = p.fv()[1];
 		q[2] = p.fv()[2];
 		m_path.push_back(q);
-		
+
 		float *r = new float[3];
 		r[0] = (float)m_vlist[n].vid1;
 		r[1] = (float)m_vlist[n].vid2;
@@ -162,7 +162,7 @@ void GeodesicPath::computeGeodesicPath(int x)
 		m_bary_path.push_back(r);
 
 		if (Dnew == 0 || (Dprev == Dnew && n > 0)) break;
-		
+
 		Dprev = Dnew;
 	}
 }
@@ -238,4 +238,3 @@ void GeodesicPath::vertex_stepping(int v, int &w, int &f)
 	int z2 = get_vertex_face(f2, v, w);
 	f = (m_dist[z1] < m_dist[z2]) ? f1 : f2;
 }
-

@@ -4,14 +4,14 @@
 %   [D,S,Q] = perform_front_propagation_mesh(vertex, faces, W,start_points,end_points, nb_iter_max,H,L, values, dmax);
 %
 %   'D' is a 2D array containing the value of the distance function to seed.
-%	'S' is a 2D array containing the state of each point : 
+%	'S' is a 2D array containing the state of each point :
 %		-1 : dead, distance have been computed.
 %		 0 : open, distance is being computed but not set.
 %		 1 : far, distance not already computed.
 %	'W' is the weight matrix (inverse of the speed).
 %	'start_points' is a 2 x num_start_points matrix where k is the number of starting points.
 %	'H' is an heuristic (distance that remains to goal). This is a 2D matrix.
-%   
+%
 %   Copyright (c) 2004 Gabriel Peyré
 *=================================================================*/
 
@@ -23,7 +23,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -43,7 +43,7 @@ Geodesic::Geodesic(const Mesh *mesh)
 	D = NULL;	// distance
 	S = NULL;	// state
 	Q = NULL;	// nearest neighbor
-	
+
 	if (mesh != NULL) setupMesh(mesh);
 }
 
@@ -119,11 +119,11 @@ void Geodesic::setupMesh(const Mesh *mesh)
 		GWMesh.SetFace(i, &face);
 	}
 	GWMesh.BuildConnectivity();
-	
+
 	GWMesh.RegisterWeightCallbackFunction(std::bind(&Geodesic::WeightCallback, this, std::placeholders::_1));
 	GWMesh.RegisterForceStopCallbackFunction(std::bind(&Geodesic::StopMarchingCallback, this, std::placeholders::_1));
 	GWMesh.RegisterVertexInsersionCallbackFunction(std::bind(&Geodesic::InsersionCallback, this, std::placeholders::_1, std::placeholders::_2));
-	
+
 	// first ouput : distance
 	if (D != NULL) delete [] D;
 	D = new double[nverts];
@@ -133,7 +133,7 @@ void Geodesic::setupMesh(const Mesh *mesh)
 	if (Q != NULL) delete [] Q;
 	// second output : segmentation, nearest neighbor
 	Q = new int[nverts];
-	
+
 	setupOptions();
 }
 
@@ -176,7 +176,7 @@ void Geodesic::perform_front_propagation(int start_point, int end_point)
 {
 	int start_points[1] = {start_point};
 	dmax = 1e9;
-	
+
 	if (end_point == -1)
 	{
 		perform_front_propagation(start_points, 1, NULL, 0);
@@ -191,7 +191,7 @@ void Geodesic::perform_front_propagation(int start_point, int end_point)
 void Geodesic::perform_front_propagation(int start_point, double _dmax)
 {
 	int start_points[1] = {start_point};
-	
+
 	perform_front_propagation(start_points, 1, NULL, 0, _dmax);
 }
 
@@ -201,7 +201,7 @@ void Geodesic::perform_front_propagation(const int *_start_points, int _nstart, 
 
 	nstart = _nstart;
 	nend = _nend;
-	
+
 	// arg4 : start_points
 	start_points = _start_points;
 	// arg5 : end_points
@@ -220,12 +220,12 @@ void Geodesic::perform_front_propagation(const int *_start_points, int _nstart, 
 		GW_ASSERT(v != NULL);
 		GWMesh.AddStartVertex(*v);
 	}
-		
+
 	GWMesh.SetUpFastMarching();
-	
+
 	// perform fast marching
 	GWMesh.PerformFastMarching();
-	
+
 	// output result
 	for(int i = 0; i < nverts; ++i)
 	{
@@ -255,4 +255,3 @@ const int * Geodesic::source(void)
 {
 	return Q;
 }
-

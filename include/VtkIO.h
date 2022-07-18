@@ -6,7 +6,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -14,8 +14,8 @@
 #include <algorithm>
 #include "MeshIO.h"
 
-#if defined(_WIN32) || defined(_WIN64) 
-#define strcasecmp _stricmp 
+#if defined(_WIN32) || defined(_WIN64)
+#define strcasecmp _stricmp
 #endif
 
 using namespace std;
@@ -29,4 +29,3 @@ public:
 	void read(const char *filename);
 	static void save(const char *filename, const Mesh *mesh, bool normal = false, bool binary = false);
 };
-

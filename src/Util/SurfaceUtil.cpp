@@ -6,7 +6,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -56,7 +56,7 @@ void SurfaceUtil::curvature(const Mesh *mesh, double *cmin, double *cmax, double
 
 	// smoothing
 	if (nIterSmoothingTensor > 0) smoothingTensor(mesh, Tv, nIterSmoothingTensor);
-	
+
 	double *work_min, *work_max;
 	bool minNull = (umin == NULL), maxNull = (umax == NULL);
 	if (minNull)
@@ -80,7 +80,7 @@ void SurfaceUtil::curvature(const Mesh *mesh, double *cmin, double *cmax, double
 	for (int i = 0; i < n; i++)
 		delete [] Tv[i];
 	delete [] work;
-	
+
 	if (minNull)
 	{
 		delete [] work_min;
@@ -310,7 +310,7 @@ void SurfaceUtil::sphere(Mesh *mesh, int type, int max_iter)
 				int id2 = mesh->face(i)->list((j + 2) % 3);
 				Vector P = Vector(mesh->vertex(id)->fv(), mesh->vertex(id1)->fv());
 				Vector Q = Vector(mesh->vertex(id)->fv(), mesh->vertex(id2)->fv());
-				
+
 				// angle
 				/*float x = P.unit() * Q.unit();
 				float weight = max(x / sqrt(1 - x * x), 1e-1);
@@ -378,7 +378,7 @@ void SurfaceUtil::sphere(Mesh *mesh, int type, int max_iter)
 				newv[i] = mesh->vertex(i)->fv();	// area preservation
 			else
 				newv[i] = Vector({0, 0, 0});	// angle preservation
-			
+
 			for (int j = 0; j < nn; j++)
 				newv[i] += Vector(mesh->vertex(neighbor[j])->fv()) * w[i][j];
 			newv[i].unit();
@@ -426,7 +426,7 @@ void SurfaceUtil::smoothing(Mesh *mesh)
 	{
 		const int *neighbor = mesh->vertex(i)->list();
 		const int nn = mesh->vertex(i)->nNeighbor();
-		
+
 		for (int j = 0; j <  nn; j++)
 		{
 			newv[i] += Vector(mesh->vertex(neighbor[j])->fv());
@@ -452,7 +452,7 @@ void SurfaceUtil::smoothing(Mesh *mesh, float sigma)
 	{
 		const int *neighbor = mesh->vertex(i)->list();
 		const int nn = mesh->vertex(i)->nNeighbor();
-		
+
 		float weight = 0;
 		for (int j = 0; j <  nn; j++)
 		{
@@ -482,7 +482,7 @@ void SurfaceUtil::smoothing(const Mesh *mesh, float *data)
 	{
 		const int *neighbor = mesh->vertex(i)->list();
 		const int nn = mesh->vertex(i)->nNeighbor();
-		
+
 		newv[i] = 0;
 		for (int j = 0; j <  nn; j++)
 		{
@@ -505,7 +505,7 @@ void SurfaceUtil::smoothing(const Mesh *mesh, double *data)
 	{
 		const int *neighbor = mesh->vertex(i)->list();
 		const int nn = mesh->vertex(i)->nNeighbor();
-		
+
 		newv[i] = 0;
 		for (int j = 0; j <  nn; j++)
 		{
@@ -551,7 +551,7 @@ void SurfaceUtil::tensor(const Mesh *mesh, std::vector<double **> &Tv)
 		check[i] = true;
 	}
 
-	std::sort(edgeList.begin(), edgeList.end()); 
+	std::sort(edgeList.begin(), edgeList.end());
 
 	for (int i = 0; i < mesh->nFace(); i++)
 	{
@@ -592,7 +592,7 @@ void SurfaceUtil::tensor(const Mesh *mesh, std::vector<double **> &Tv)
 		int fid1 = edgeList[i].fid1;
 		int fid2 = edgeList[i].fid2;
 		if (fid1 == -1 || fid2 == -1) continue;
-		
+
 		Vector fn1(mesh->face(fid1)->faceNormal().fv()), fn2(mesh->face(fid2)->faceNormal().fv());
 		double beta = fn1 * fn2;
 		Vector cp = fn1.cross(fn2);
@@ -614,7 +614,7 @@ void SurfaceUtil::tensor(const Mesh *mesh, std::vector<double **> &Tv)
 			{
 				Tv[edgeList[i].vid1][j][k] += edgeList[i].T[j][k] / (double)mesh->vertex(edgeList[i].vid1)->nNeighbor();
 				Tv[edgeList[i].vid1][k][j] = Tv[edgeList[i].vid1][j][k];
-				
+
 				Tv[edgeList[i].vid2][j][k] += edgeList[i].T[j][k] / (double)mesh->vertex(edgeList[i].vid2)->nNeighbor();
 				Tv[edgeList[i].vid2][k][j] = Tv[edgeList[i].vid2][j][k];
 			}
@@ -687,7 +687,7 @@ void SurfaceUtil::smoothingTensor(const Mesh *mesh, const std::vector<double **>
 			}
 		}
 	}
-	
+
 	for (int i = 0; i < n; i++)
 		delete [] TvT[i];
 	delete [] workT;
@@ -716,7 +716,7 @@ void SurfaceUtil::principalCurvature(const std::vector<double **> Tv, const int 
 
 		LinearAlgebra::eig3symmetric(T, lambda, eigv);
 
-		if ((fabs(lambda[0]) > fabs(lambda[1]) && fabs(lambda[0]) < fabs(lambda[2])) || 
+		if ((fabs(lambda[0]) > fabs(lambda[1]) && fabs(lambda[0]) < fabs(lambda[2])) ||
 			(fabs(lambda[0]) < fabs(lambda[1]) && fabs(lambda[0]) > fabs(lambda[2])))
 		{
 			cmin[i] = lambda[0];
@@ -759,4 +759,3 @@ void SurfaceUtil::principalCurvature(const std::vector<double **> Tv, const int 
 		}
 	}
 }
-

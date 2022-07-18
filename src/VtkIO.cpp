@@ -6,7 +6,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -38,7 +38,7 @@ void VtkIO::read(const char *filename)
 	int nNormal = 0;
 	int nColor = 0;
 	char buf[8192];
-	
+
 	ifstream fin(filename);
 	while (!fin.eof())
 	{
@@ -63,7 +63,7 @@ void VtkIO::read(const char *filename)
 				int n = atoi(ptr);
 				fin.getline(buf, sizeof(buf));
 				ptr = strtok(buf, " ");
-				
+
 				if (!strcasecmp(ptr, "normals"))
 				{
 					nNormal = n;
@@ -180,7 +180,7 @@ void VtkIO::read(const char *filename)
 			}
 		}
 	}
-	
+
 	fin.close();
 }
 
@@ -188,7 +188,7 @@ void VtkIO::save(const char *filename, const Mesh *mesh, bool normal, bool binar
 {
 	ofstream fout;
 	fout.precision(11);
-	
+
 	if (!binary) fout.open(filename, ios::out);
 	else fout.open(filename, ios::out | ios::binary);
 	fout << "# vtk DataFile Version 3.0" << endl;
@@ -259,6 +259,6 @@ void VtkIO::save(const char *filename, const Mesh *mesh, bool normal, bool binar
 		}
 		fout << endl;
 	}
-	
+
 	fout.close();
 }

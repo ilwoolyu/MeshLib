@@ -6,7 +6,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -38,7 +38,7 @@ void MNIObjIO::read(const char *filename)
 	int nFace = 0;
 	int nNormal = 0;
 	char buf[255];
-	
+
 	ifstream fin(filename);
 	fin.getline(buf, sizeof(buf));
 	if (buf[0] != 'P')
@@ -60,7 +60,7 @@ void MNIObjIO::read(const char *filename)
 
 	if (nNormal != nVertex) nNormal = nVertex;
 	else m_hasNormal = true;
-	
+
 	m_nVertex = nVertex;
 	m_nFace = nFace;
 	m_nNormal = nNormal;
@@ -109,7 +109,6 @@ void MNIObjIO::read(const char *filename)
 			ptr = strtok(NULL, " \r\n");
 		}
 	}
-	
+
 	fin.close();
 }
-

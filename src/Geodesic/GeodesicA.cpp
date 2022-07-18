@@ -4,14 +4,14 @@
 %   [D,S,Q] = perform_front_propagation_mesh(vertex, faces, W,start_points,end_points, nb_iter_max,H,L, values, dmax);
 %
 %   'D' is a 2D array containing the value of the distance function to seed.
-%	'S' is a 2D array containing the state of each point : 
+%	'S' is a 2D array containing the state of each point :
 %		-1 : dead, distance have been computed.
 %		 0 : open, distance is being computed but not set.
 %		 1 : far, distance not already computed.
 %	'W' is the weight matrix (inverse of the speed).
 %	'start_points' is a 2 x num_start_points matrix where k is the number of starting points.
 %	'H' is an heuristic (distance that remains to goal). This is a 2D matrix.
-%   
+%
 %   Copyright (c) 2004 Gabriel Peyré
 *=================================================================*/
 
@@ -23,7 +23,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -40,7 +40,7 @@ GeodesicA::GeodesicA(const Mesh *mesh)
 {
 	nverts = -1;
 	nfaces = -1;
-	
+
 	V1 = NULL;	// principal direction 1 of the metric tensor
 	V1_ = NULL;	// workspace for principal direction 1 of the metric tensor
 	Lam1 = NULL;	// eigenvalue 1 of the metric tensor
@@ -54,7 +54,7 @@ GeodesicA::GeodesicA(const Mesh *mesh)
 	pT = NULL;	// work space for tensor
 	exc	= NULL;
 	varea = NULL;
-	
+
 	if (mesh != NULL) setupMesh(mesh);
 }
 
@@ -65,7 +65,7 @@ GeodesicA::~GeodesicA(void)
 	if (Lam1 != NULL) delete [] Lam1;
 	if (Lam2 != NULL) delete [] Lam2;
 	if (varea != NULL) delete [] varea;
-	
+
 	if (D != NULL) delete [] D;
 	// second output : state
 	if (S != NULL) delete [] S;
@@ -95,13 +95,13 @@ double GeodesicA::Lam2Callback(GW_GeodesicVertex& Vert1)
 GW_Float GeodesicA::WeightCallback(GW_GeodesicVertex& Vert1, GW_Vector3D& Vert2)
 {
 	GW_U32 i = Vert1.GetID();
-	
+
 	GW_Vector3D E = Vert2 - Vert1.GetPosition();
 	GW_Vector3D N = Vert1.GetNormal();
 	GW_Float p = N * E;
 	E -= N * p;
 	E /= E.Norm();
-	
+
 	GW_Float speed = E[0] * (T[i][0] * E[0] + T[i][1] * E[1] + T[i][2] * E[2]) +
 					E[1] * (T[i][3] * E[0] + T[i][4] * E[1] + T[i][5] * E[2]) +
 					E[2] * (T[i][6] * E[0] + T[i][7] * E[1] + T[i][8] * E[2]);
@@ -138,7 +138,7 @@ GW_Bool GeodesicA::StopMarchingCallback( GW_GeodesicVertex& Vert )
 		if (area_prop > area_max)
 			return true;
 	}
-	
+
 	for( int k=0; k<nend; ++k )
 		if( end_points[k]==i )
 			return true;
@@ -178,7 +178,7 @@ void GeodesicA::setupCurvature(const Mesh *mesh)
 void GeodesicA::setupMesh(const Mesh *mesh)
 {
 	setupCurvature(mesh);
-	
+
 	varea = new double[mesh->nVertex()];
 	for (int i = 0; i < mesh->nVertex(); i++)
 		varea[i] = vertexArea(mesh, i);
@@ -206,13 +206,13 @@ void GeodesicA::setupMesh(const Mesh *mesh)
 		GWMesh.SetFace(i, &face);
 	}
 	GWMesh.BuildConnectivity();
-	
+
 	for(int i = 0; i < nverts; ++i)
 	{
 		GW_Vertex* v = GWMesh.GetVertex(i);
 		v->BuildRawNormal();
 	}
-	
+
 	T = new double*[nverts];
 	pT = new double[nverts * 9];
 	for (int i = 0; i < nverts; i++)
@@ -234,11 +234,11 @@ void GeodesicA::setupMesh(const Mesh *mesh)
 	GWMesh.RegisterV1CallbackFunction(std::bind(&GeodesicA::V1Callback, this, std::placeholders::_1));
 	GWMesh.RegisterLam1CallbackFunction(std::bind(&GeodesicA::Lam1Callback, this, std::placeholders::_1));
 	GWMesh.RegisterLam2CallbackFunction(std::bind(&GeodesicA::Lam2Callback, this, std::placeholders::_1));
-	
+
 	GWMesh.RegisterWeightCallbackFunction(std::bind(&GeodesicA::WeightCallback, this, std::placeholders::_1, std::placeholders::_2));
 	GWMesh.RegisterForceStopCallbackFunction(std::bind(&GeodesicA::StopMarchingCallback, this, std::placeholders::_1));
 	GWMesh.RegisterVertexInsersionCallbackFunction(std::bind(&GeodesicA::InsersionCallback, this, std::placeholders::_1, std::placeholders::_2));
-	
+
 	setupCurvatureTensor();
 
 	// first ouput : distance
@@ -281,10 +281,10 @@ void GeodesicA::setTensor(const double **_T)
 	for (int i = 0; i < nverts; i++)
 	{
 		double T1[3][3] = {{T[i][0], T[i][1], T[i][2]}, {T[i][3], T[i][4], T[i][5]}, {T[i][6], T[i][7], T[i][8]}};
-	
+
 		double lambda[3];
 		double eigv[3][3];
-		
+
 		LinearAlgebra::eig3symmetric(T1, lambda, eigv);
 		//GW_ASSERT(fabs(lambda[0]) < GW_EPSILON); 	// lambda0 should be always zero
 		//cout << "lambda[0]: " << lambda[0] << endl;
@@ -301,14 +301,14 @@ void GeodesicA::setTensor(const double **_u, const double *_lam1, const double *
 	{
 		GW_Vector3D V1_(_u[i][0], _u[i][1], _u[i][2]);
 		GW_Vector3D N = GWMesh.GetVertex(i)->GetNormal();
-		
+
 		// force orthogonal to normal
 		double p = N * V1_;
 		V1_ -= N * p; V1_ /= V1_.Norm();
-		
+
 		V2[i] = N ^ V1_; V2[i] /= V2[i].Norm();
 		V1[i][0] = V1_[0]; V1[i][1] = V1_[1]; V1[i][2] = V1_[2];
-		
+
 		Lam1[i] = _lam1[i];
 		Lam2[i] = _lam2[i];
 	}
@@ -330,7 +330,7 @@ void GeodesicA::setTensor(const double **_u, const double *_lam1, const double *
 			cout << T[i][6] << " " << T[i][7] << " " << T[i][8] << endl<<endl;;
 		}*/
 	}
-	
+
 	delete [] V2;
 }
 
@@ -341,7 +341,7 @@ void GeodesicA::setupCurvatureTensor(void)
 	for (int i = 0; i < nverts; i++) _u[i] = &_pu[i * 3];
 	double *_lam1 = new double[nverts];
 	double *_lam2 = new double[nverts];
-	
+
 	double eps = 1e-2;
 	double m = FLT_MAX, M = 0;
 	for (int i = 0; i < nverts; i++)
@@ -350,7 +350,7 @@ void GeodesicA::setupCurvatureTensor(void)
 		//v->BuildCurvatureData();
 		//GW_Float cmin = v->GetMinCurv(), cmax = v->GetMaxCurv();
 		GW_Float cmin = m_cmin[i], cmax = m_cmax[i];
-		
+
 		GW_Float invcmin = 1 / (fabs(cmin) + eps);
 		GW_Float invcmax = 1 / (fabs(cmax) + eps);
 		if (m > invcmin) m = invcmin;
@@ -358,7 +358,7 @@ void GeodesicA::setupCurvatureTensor(void)
 		if (m > invcmax) m = invcmax;
 		if (M < invcmax) M = invcmax;
 	}
-	
+
 	/*cout << "Min Curv: " << m << " ";
 	cout << "Max Curv: " << M << endl;*/
 	GW_Float a = 1, b = 100;
@@ -369,7 +369,7 @@ void GeodesicA::setupCurvatureTensor(void)
 		//GW_Float cmin = v->GetMinCurv(), cmax = v->GetMaxCurv();
 		const double *dmin = m_umin[i], *dmax = m_umax[i];
 		GW_Float cmin = m_cmin[i], cmax = m_cmax[i];
-		
+
 		GW_Float invcmin = 1 / (fabs(cmin) + eps);
 		GW_Float invcmax = 1 / (fabs(cmax) + eps);
 		GW_Float recmin = (b - a) * (invcmin - m) / (M - m) + a;
@@ -379,7 +379,7 @@ void GeodesicA::setupCurvatureTensor(void)
 		_u[i][0] = dmin[0]; _u[i][1] = dmin[1]; _u[i][2] = dmin[2];
 	}
 	setTensor((const double **)_u, (const double *)_lam1, (const double *)_lam2);
-	
+
 	/*FILE *fp = fopen("/NIRAL/work/ilwoolyu/Surfaces/Gyrification/test/eig.txt", "w");
 	for (int i = 0; i < nverts; i++)
 	{
@@ -391,7 +391,7 @@ void GeodesicA::setupCurvatureTensor(void)
 		fprintf(fp, "%f %f %f\n", _u[i][0], _u[i][1], _u[i][2]);
 	}
 	fclose(fp);*/
-	
+
 	delete [] _u;
 	delete [] _pu;
 	delete [] _lam1;
@@ -419,7 +419,7 @@ double GeodesicA::vertexArea(const Mesh *mesh, int id)
 		double area = a * b * sin(theta) / 2;
 		sum += area / 3;
 	}
-	
+
 	return sum;
 }
 
@@ -462,7 +462,7 @@ void GeodesicA::perform_front_propagation(int start_point, int end_point)
 {
 	int start_points[1] = {start_point};
 	dmax = 1e9;
-	
+
 	if (end_point == -1)
 	{
 		perform_front_propagation(start_points, 1, NULL, 0);
@@ -477,7 +477,7 @@ void GeodesicA::perform_front_propagation(int start_point, int end_point)
 void GeodesicA::perform_front_propagation(int start_point, double _dmax)
 {
 	int start_points[1] = {start_point};
-	
+
 	perform_front_propagation(start_points, 1, NULL, 0, _dmax);
 }
 
@@ -489,7 +489,7 @@ void GeodesicA::perform_front_propagation(const int *_start_points, int _nstart,
 	area_max = _area_max;
 	nstart = _nstart;
 	nend = _nend;
-	
+
 	// arg4 : start_points
 	start_points = _start_points;
 	// arg5 : end_points
@@ -508,12 +508,12 @@ void GeodesicA::perform_front_propagation(const int *_start_points, int _nstart,
 		GW_ASSERT(v != NULL);
 		GWMesh.AddStartVertex(*v);
 	}
-	
+
 	GWMesh.SetUpFastMarching();
-	
+
 	// perform fast marching
 	GWMesh.PerformFastMarching();
-	
+
 	// output result
 	for(int i = 0; i < nverts; ++i)
 	{

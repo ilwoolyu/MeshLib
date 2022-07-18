@@ -251,6 +251,13 @@ void Vertex::setList(const int *list, const int n)
 	memcpy(m_list, list, sizeof(int) * n);
 }
 
+void Vertex::setPreAlloc(float *array)
+{
+	if (!m_pre_alloc) delete [] m_vertex;
+	m_pre_alloc = true;
+	m_vertex = array;
+}
+
 int Vertex::id(void) const
 {
 	return m_id;
@@ -323,6 +330,13 @@ void Normal::setNormal(const float *v)
 	m_normal[0] = v[0]; m_normal[1] = v[1]; m_normal[2] = v[2];
 }
 
+void Normal::setPreAlloc(float *array)
+{
+	if (!m_pre_alloc) delete [] m_normal;
+	m_pre_alloc = true;
+	m_normal = array;
+}
+
 const Normal & Normal::operator +=(const Normal &n)
 {
 	m_normal[0] += n.m_normal[0];
@@ -357,7 +371,7 @@ Face::Face(const int id, int *array1, float *array2)
 {
 	m_pre_alloc = true;
 	m_list = array1;
-	m_face_normal = Normal(array2);
+	m_face_normal.setPreAlloc(array2);
 	m_id = id;
 }
 
@@ -370,6 +384,14 @@ void Face::setVertex(const Vertex **v)
 {
 	m_vertex[0] = (Vertex *)v[0]; m_vertex[1] = (Vertex *)v[1]; m_vertex[2] = (Vertex *)v[2];
 	updateFaceNormal();
+}
+
+void Face::setPreAlloc(int *array1, float *array2)
+{
+	if (!m_pre_alloc) delete [] m_list;
+	m_pre_alloc = true;
+	m_list = array1;
+	m_face_normal.setPreAlloc(array2);
 }
 
 const Vertex * Face::vertex(const int index) const
@@ -433,6 +455,10 @@ Mesh::Mesh(void)
 	m_nFace = 0;
 	m_nNormal = 0;
 
+	m_vertex = NULL;
+	m_normal = NULL;
+	m_face = NULL;
+
 	m_vertex_array = NULL;
 	m_normal_array = NULL;
 	m_face_normal_array = NULL;
@@ -441,16 +467,25 @@ Mesh::Mesh(void)
 
 Mesh::~Mesh(void)
 {
-	for (int i = 0; i < m_nVertex; i++) delete m_vertex[i];
-	for (int i = 0; i < m_nNormal; i++) delete m_normal[i];
-	for (int i = 0; i < m_nFace; i++) delete m_face[i];
-	delete [] m_vertex;
-	delete [] m_normal;
-	delete [] m_face;
-	delete [] m_vertex_array;
-	delete [] m_normal_array;
-	delete [] m_face_normal_array;
-	delete [] m_face_array;
+	if (m_vertex != NULL)
+	{
+		for (int i = 0; i < m_nVertex; i++) delete m_vertex[i];
+		delete [] m_vertex;
+	}
+	if (m_normal != NULL)
+	{
+		for (int i = 0; i < m_nNormal; i++) delete m_normal[i];
+		delete [] m_normal;
+	}
+	if (m_face != NULL)
+	{
+		for (int i = 0; i < m_nFace; i++) delete m_face[i];
+		delete [] m_face;
+	}
+	if (m_vertex_array != NULL) delete [] m_vertex_array;
+	if (m_normal_array != NULL) delete [] m_normal_array;
+	if (m_face_normal_array != NULL) delete [] m_face_normal_array;
+	if (m_face_array != NULL) delete [] m_face_array;
 }
 
 const Vertex ** Mesh::vertex(void) const
@@ -564,6 +599,26 @@ void Mesh::rotation(const float *axis, float theta, float *v)
 
 void Mesh::setMesh(const float *vertex, const int *face, const float *normal, int nVertex, int nFace, int nNormal, bool hasNormal)
 {
+	if (m_vertex != NULL)
+	{
+		for (int i = 0; i < m_nVertex; i++) delete m_vertex[i];
+		delete [] m_vertex;
+	}
+	if (m_normal != NULL)
+	{
+		for (int i = 0; i < m_nNormal; i++) delete m_normal[i];
+		delete [] m_normal;
+	}
+	if (m_face != NULL)
+	{
+		for (int i = 0; i < m_nFace; i++) delete m_face[i];
+		delete [] m_face;
+	}
+	if (m_vertex_array != NULL) delete [] m_vertex_array;
+	if (m_normal_array != NULL) delete [] m_normal_array;
+	if (m_face_normal_array != NULL) delete [] m_face_normal_array;
+	if (m_face_array != NULL) delete [] m_face_array;
+
 	m_nVertex = nVertex;
 	m_nFace = nFace;
 	m_nNormal = (hasNormal) ? nNormal: nVertex;
@@ -576,10 +631,6 @@ void Mesh::setMesh(const float *vertex, const int *face, const float *normal, in
 	m_normal = new Normal*[m_nNormal];
 	m_face = new Face*[m_nFace];
 
-	if (m_vertex_array != NULL) delete [] m_vertex_array;
-	if (m_normal_array != NULL) delete [] m_normal_array;
-	if (m_face_normal_array != NULL) delete [] m_face_normal_array;
-	if (m_face_array != NULL) delete [] m_face_array;
 	m_vertex_array = new float[m_nVertex * 3];
 	m_normal_array = new float[m_nNormal * 3];
 	m_face_normal_array = new float[m_nFace * 3];

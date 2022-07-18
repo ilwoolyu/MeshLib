@@ -63,6 +63,7 @@ public:
 	~Vertex(void);
 	void setVertex(const float *v);
 	void setList(const int *list, const int n);
+	void setPreAlloc(float *array);
 	float operator[] (const int id) const;
 	const int *list(void) const;
 	int list(const int index) const;
@@ -87,6 +88,7 @@ public:
 	Normal(const float *v);
 	~Normal(void);
 	void setNormal(const float *v);
+	void setPreAlloc(float *array);
 	void normalize(void);
 	const float *fv(void) const;
 	const Normal &operator +=(const Normal &n);
@@ -108,6 +110,7 @@ public:
 	void setVertex(const Vertex **v);
 	void setNormal(const Normal **v);
 	void setList(const int *list);
+	void setPreAlloc(int *array1, float *array2);
 	void updateFaceNormal(void);
 	int id(void);
 	const int *list(void) const;

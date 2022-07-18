@@ -6,7 +6,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -27,6 +27,7 @@ MeshIO::~MeshIO(void)
 	delete [] m_vertex;
 	delete [] m_normal;
 	delete [] m_face;
+	if (m_hasColor) delete [] m_color;
 }
 
 int MeshIO::nVertex(void)

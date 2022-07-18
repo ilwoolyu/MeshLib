@@ -6,7 +6,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -242,11 +242,11 @@ int Slicer::size(int group)
 }
 void Slicer::searchTree(node *root, vector<int> *cand, const float a, const float b, const float c, const float d)
 {
-	if (root->left != NULL && 
+	if (root->left != NULL &&
 		boxIntersection(a, b, c, d, root->left->x0, root->left->x1, root->left->y0, root->left->y1, root->left->z0, root->left->z1))
 		searchTree(root->left, cand, a, b, c, d);
 
-	if (root->right != NULL && 
+	if (root->right != NULL &&
 		boxIntersection(a, b, c, d, root->right->x0, root->right->x1, root->right->y0, root->right->y1, root->right->z0, root->right->z1))
 		searchTree(root->right, cand, a, b, c, d);
 
@@ -307,7 +307,7 @@ int Slicer::contour(void)
 					{
 						ContourHead chLoop;
 						swap(ch.begin->prev, part->prev);
-						
+
 						// previous group
 						for (n = 0, iter = ch.begin; iter != part; iter = iter->next, n++);
 						ch.size = n;
@@ -401,7 +401,7 @@ int Slicer::tracePList(int headID, int id)
 		m_slice[id].next = &m_slice[newNextID];
 
 		sort(m_slice.begin(), m_slice.end());
-		
+
 		int nextID = lower_bound(m_slice.begin(), m_slice.end(), iter->nextID) - m_slice.begin();
 
 		return tracePList(headFaceID, nextID) + n;
@@ -423,4 +423,3 @@ int Slicer::tracePList(int headID, int id)
 		return 1;
 	}
 }
-

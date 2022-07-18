@@ -6,7 +6,7 @@
 *
 *	University of North Carolina at Chapel Hill
 *	Department of Computer Science
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@cs.unc.edu
 *************************************************/
 
@@ -39,7 +39,7 @@ public:
 	const double *dist(void);
 	const int *state(void);
 	const int *source(void);
-	
+
 private:
 	GW_Float WeightCallback(GW_GeodesicVertex& Vert);
 	GW_Bool StopMarchingCallback(GW_GeodesicVertex& Vert);
@@ -47,14 +47,14 @@ private:
 	GW_Float HeuristicCallback(GW_GeodesicVertex& Vert);
 
 private:
-	int nverts; 
+	int nverts;
 	int nfaces;
 	int nstart, nend;
 	int niter_max;
-	double dmax;	
+	double dmax;
 	const int *start_points, *end_points;
 	const double *Ww, *H, *L, *values;
-	// outputs 
+	// outputs
 	double *D;	// distance
 	int *S;	// state
 	int *Q;	// nearest neighbor

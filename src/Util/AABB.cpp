@@ -6,7 +6,7 @@
 *
 *	Ulsan National Institute of Science and Technology
 *	Department of Computer Science and Engineering
-*	
+*
 *	Ilwoo Lyu, ilwoolyu@unist.ac.kr
 *************************************************/
 
@@ -111,13 +111,13 @@ void AABB::searchTree(const float *p, vector<int> *cand, float eps)
 }
 void AABB::searchTree(const float *p, node *root, vector<int> *cand, float eps)
 {
-	if (root->left != NULL && 
-		p[0] >= root->left->x0 - eps && p[1] >= root->left->y0 - eps && p[2] >= root->left->z0 - eps && 
+	if (root->left != NULL &&
+		p[0] >= root->left->x0 - eps && p[1] >= root->left->y0 - eps && p[2] >= root->left->z0 - eps &&
 		p[0] <= root->left->x1 + eps && p[1] <= root->left->y1 + eps && p[2] <= root->left->z1 + eps)
 		searchTree(p, root->left, cand, eps);
 
 	if (root->right != NULL &&
-		p[0] >= root->right->x0 - eps && p[1] >= root->right->y0 - eps && p[2] >= root->right->z0 - eps && 
+		p[0] >= root->right->x0 - eps && p[1] >= root->right->y0 - eps && p[2] >= root->right->z0 - eps &&
 		p[0] <= root->right->x1 + eps && p[1] <= root->right->y1 + eps && p[2] <= root->right->z1 + eps)
 		searchTree(p, root->right, cand, eps);
 
@@ -131,19 +131,19 @@ void AABB::searchTree(float *pmin, float *pmax, node *root, vector<int> *cand, f
 
 	if (!trace)
 	{
-		if (root->left != NULL && 
-			pmin[0] >= root->left->x0 - eps && pmin[1] >= root->left->y0 - eps && pmin[2] >= root->left->z0 - eps && 
+		if (root->left != NULL &&
+			pmin[0] >= root->left->x0 - eps && pmin[1] >= root->left->y0 - eps && pmin[2] >= root->left->z0 - eps &&
 			pmin[0] <= root->left->x1 + eps && pmin[1] <= root->left->y1 + eps && pmin[2] <= root->left->z1 + eps &&
-			pmax[0] >= root->left->x0 - eps && pmax[1] >= root->left->y0 - eps && pmax[2] >= root->left->z0 - eps && 
+			pmax[0] >= root->left->x0 - eps && pmax[1] >= root->left->y0 - eps && pmax[2] >= root->left->z0 - eps &&
 			pmax[0] <= root->left->x1 + eps && pmax[1] <= root->left->y1 + eps && pmax[2] <= root->left->z1 + eps)
 			searchTree(pmin, pmax, root->left, cand, eps, trace);
 		else
 			traceOverL = true;
 
-		if (root->right != NULL && 
-			pmin[0] >= root->right->x0 - eps && pmin[1] >= root->right->y0 - eps && pmin[2] >= root->right->z0 - eps && 
+		if (root->right != NULL &&
+			pmin[0] >= root->right->x0 - eps && pmin[1] >= root->right->y0 - eps && pmin[2] >= root->right->z0 - eps &&
 			pmin[0] <= root->right->x1 + eps && pmin[1] <= root->right->y1 + eps && pmin[2] <= root->right->z1 + eps &&
-			pmax[0] >= root->right->x0 - eps && pmax[1] >= root->right->y0 - eps && pmax[2] >= root->right->z0 - eps && 
+			pmax[0] >= root->right->x0 - eps && pmax[1] >= root->right->y0 - eps && pmax[2] >= root->right->z0 - eps &&
 			pmax[0] <= root->right->x1 + eps && pmax[1] <= root->right->y1 + eps && pmax[2] <= root->right->z1 + eps)
 			searchTree(pmin, pmax, root->right, cand, eps, trace);
 		else
@@ -324,7 +324,7 @@ void AABB::updateTree(node *root)
 {
 	if (root->left != NULL) updateTree(root->left);
 	if (root->right != NULL) updateTree(root->right);
-	
+
 	boundingBox(root);
 }
 void AABB::deleteTree(node *root)
