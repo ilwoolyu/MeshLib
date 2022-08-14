@@ -91,7 +91,7 @@ int AABB_Sphere::closestFaceBool(const float *v, float *coeff, bool *xcand, cons
 		const float *c = m_mesh->face(cand[i])->vertex(2)->fv();
 
 		// projection of v onto the triangle
-		Vector N = Vector(m_mesh->face(cand[i])->faceNormal().fv());
+		Vector N = Vector(a, b).cross(Vector(b, c)).unit();
 		float r0 = Vector(a) * N;
 		float r1 = Vector(v) * N;
 		if (r1 < r0 + eps) continue;
@@ -198,9 +198,10 @@ int AABB_Sphere::closestFace(const float *v, float *coeff, vector<int> &xcand, c
 
 		float tcoeff[3];
 
-		Vector N = Vector(m_mesh->face(cand[i])->faceNormal().fv());
+		Vector N = Vector(a, b).cross(Vector(b, c)).unit();
 		float r0 = Vector(a) * N;
 		float r1 = Vector(v) * N;
+
 		if (r1 < r0 + eps) continue;
 		Vector V_proj = Vector(v) * (r0 / r1);	// scaling a query vector
 

@@ -413,8 +413,8 @@ void Face::setList(const int *list)
 
 void Face::updateFaceNormal(void)
 {
-	Vector v1(m_vertex[1]->fv(), m_vertex[0]->fv());
-	Vector v2(m_vertex[2]->fv(), m_vertex[1]->fv());
+	Vector v1(m_vertex[0]->fv(), m_vertex[1]->fv());
+	Vector v2(m_vertex[1]->fv(), m_vertex[2]->fv());
 	Vector v3 = v1.cross(v2);
 	v3.unit();
 	m_face_normal.setNormal(v3.fv());
